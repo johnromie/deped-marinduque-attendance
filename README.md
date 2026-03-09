@@ -105,10 +105,49 @@ Quick deploy steps:
 5. Deploy and wait until `Live`.
 6. Share your Render URL to users (phone/data/any Wi-Fi).
 
+After deploy, use this one-time local setup so `public:url` always prints your Render link:
+
+```bat
+cd /d C:\Users\Asus\Desktop\app\app
+scripts\setup-render-url.cmd "https://your-service-name.onrender.com"
+```
+
+Equivalent npm command:
+
+```bat
+npm run public:setup:render -- "https://your-service-name.onrender.com"
+```
+
+Then anytime:
+
+```bat
+scripts\get-public-url.cmd
+```
+
+It will return the same Render URL (same for desktop and cellphone).
+
 Important:
 - Open app in Safari/Chrome (not Messenger in-app browser) to avoid camera/GPS permission blocks.
 - Render free plan can sleep on inactivity, but URL stays the same.
 - If you need truly 24/7 no-sleep uptime, use a paid plan or keep-alive monitor.
+
+## 7.1) One fixed link, no manual terminal run (Cloudflare Named Tunnel)
+
+If you want one permanent URL for both desktop and cellphone, use a Cloudflare **Named Tunnel** (not quick `trycloudflare`).
+
+One-time setup command:
+
+```bat
+cd /d C:\Users\Asus\Desktop\app\app
+scripts\setup-stable-link.cmd "<CF_TUNNEL_TOKEN>" "https://your-fixed-domain.example"
+```
+
+What this does:
+- saves `CF_TUNNEL_TOKEN` and `PUBLIC_APP_URL` in user environment
+- installs Windows logon autostart task (background, no manual CMD each time)
+- starts app+tunnel immediately
+
+After setup, desktop and phone use the same link: your `PUBLIC_APP_URL`.
 
 ## 8) Installable app now (PWA)
 

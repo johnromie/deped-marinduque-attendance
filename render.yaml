@@ -12,3 +12,25 @@ services:
         value: production
       - key: TRUST_PROXY
         value: true
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: TOKEN_TTL_HOURS
+        value: 12
+      - key: OFFICE_NAME
+        value: DepEd Marinduque Division Office
+      - key: OFFICE_LAT
+        value: 13.4767
+      - key: OFFICE_LNG
+        value: 121.9032
+      - key: MAX_RADIUS_METERS
+        value: 200
+      - key: MAX_GPS_ACCURACY_METERS
+        value: 50
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_FULL_NAME
+        value: System Admin
+      - key: ADMIN_EMPLOYEE_ID
+        value: ADMIN-001

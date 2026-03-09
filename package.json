@@ -8,7 +8,7 @@
     "dev": "node server.js",
     "start:win": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && node server.js",
     "dev:win": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && node server.js",
-    "start:cloudflare": "tools\\cloudflared.exe tunnel --url http://localhost:4000 --no-autoupdate --metrics localhost:0",
+    "start:cloudflare": "tools\\cloudflared.exe tunnel --url http://localhost:4000 --protocol http2 --no-autoupdate --metrics localhost:0",
     "start:public:cf": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"npm:start\" \"npm:start:cloudflare\"",
     "start:tunnel": "lt --port 4000",
     "start:public": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"npm:start\" \"npm:start:tunnel\"",
@@ -19,11 +19,14 @@
     "cap:sync": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap sync",
     "cap:open:android": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap open android",
     "cap:open:ios": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap open ios",
-    "dev:stable": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"nodemon server.js\" \"tools\\cloudflared.exe tunnel --url http://localhost:4000 --no-autoupdate --metrics localhost:0\"",
+    "dev:stable": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"nodemon server.js\" \"tools\\cloudflared.exe tunnel --url http://localhost:4000 --protocol http2 --no-autoupdate --metrics localhost:0\"",
     "public:start": "scripts\\run-public.cmd",
     "public:stop": "scripts\\stop-public.cmd",
     "public:url": "scripts\\get-public-url.cmd",
-    "public:autostart": "scripts\\install-autostart.cmd"
+    "public:autostart": "scripts\\install-autostart.cmd",
+    "dns:fix": "scripts\\fix-dns.cmd",
+    "public:setup:stable": "scripts\\setup-stable-link.cmd",
+    "public:setup:render": "scripts\\setup-render-url.cmd"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
