@@ -952,7 +952,27 @@ function handlePasswordLogin(req, res) {
   const users = readJsonArray(usersFile);
   const normalizedUsername = String(username).trim().toLowerCase();
   const user = users.find((u) => u.username === normalizedUsername);
-  if (!user || !verifyPassword(String(password), user.passwordSalt, user.passwordHash)) {
+  const passwordOk = Boolean(user && verifyPassword(String(password), user.passwordSalt, user.passwordHash));
+  if (!user || !passwordOk) {
+    // Auto-heal admin password drift: if env admin password is provided and typed correctly,
+    // sync stored hash so login recovers without manual DB editing.
+    if (
+      user &&
+      user.role === 'admin' &&
+      user.username === config.adminUsername &&
+      String(password) === String(config.adminPassword)
+    ) {
+      const { salt, hash } = hashPassword(String(config.adminPassword));
+      user.passwordSalt = salt;
+      user.passwordHash = hash;
+      const idx = users.findIndex((u) => u.id === user.id);
+      if (idx >= 0) {
+        users[idx] = user;
+        writeJsonArray(usersFile, users);
+      }
+      const token = createSessionToken(user);
+      return res.json({ message: 'Login successful.', token, user: sanitizeUser(user) });
+    }
     return res.status(401).json({ message: 'Invalid username or password.' });
   }
 
