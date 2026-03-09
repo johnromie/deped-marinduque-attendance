@@ -1,0 +1,155 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0056b3" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DepEd Attendance" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icons/app-icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
+    <title>DepEd Marinduque Attendance</title>
+    <link rel="stylesheet" href="/styles.css?v=20260306-9" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="card" id="authCard">
+        <h1>DepEd Marinduque Attendance Monitoring</h1>
+        <p>Login with your account to submit attendance.</p>
+        <p class="hint" id="buildInfo">Build: loading...</p>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="login">Login</button>
+          <button class="tab" data-tab="register">Register</button>
+          <button class="tab" data-tab="forgot">Forgot Password</button>
+          <button class="tab" data-tab="change">Change Password</button>
+        </div>
+
+        <div class="tab-panel" id="panel-login">
+          <label>Username
+            <input id="loginUsername" type="text" autocomplete="username" />
+          </label>
+          <label>Password
+            <input id="loginPassword" type="password" autocomplete="current-password" />
+          </label>
+          <button id="loginBtn" type="button">Login</button>
+        </div>
+
+        <div class="tab-panel hidden" id="panel-register">
+          <label>Employee ID
+            <input id="regEmployeeId" type="text" placeholder="DEPED-001" />
+          </label>
+          <label>Full Name
+            <input id="regFullName" type="text" placeholder="Juan Dela Cruz" />
+          </label>
+          <label>Username
+            <input id="regUsername" type="text" autocomplete="username" />
+          </label>
+          <label>Password (min 8 chars)
+            <input id="regPassword" type="password" autocomplete="new-password" />
+          </label>
+          <label>Security Question
+            <input id="regQuestion" type="text" placeholder="What is your favorite color?" />
+          </label>
+          <label>Security Answer
+            <input id="regAnswer" type="text" />
+          </label>
+          <button id="registerBtn" type="button">Create Account</button>
+        </div>
+
+        <div class="tab-panel hidden" id="panel-forgot">
+          <label>Username
+            <input id="forgotUsername" type="text" autocomplete="username" />
+          </label>
+          <label>Security Answer
+            <input id="forgotAnswer" type="text" />
+          </label>
+          <label>New Password
+            <input id="forgotNewPassword" type="password" autocomplete="new-password" />
+          </label>
+          <button id="forgotBtn" type="button">Reset Password</button>
+        </div>
+
+        <div class="tab-panel hidden" id="panel-change">
+          <label>Old Password
+            <input id="changeOldPassword" type="password" autocomplete="current-password" />
+          </label>
+          <label>New Password
+            <input id="changeNewPassword" type="password" autocomplete="new-password" />
+          </label>
+          <button id="changeBtn" type="button">Change Password</button>
+        </div>
+
+        <div class="status" id="authStatus">Auth Status: not logged in</div>
+      </section>
+
+      <section class="card hidden" id="appCard">
+        <div class="between">
+          <div>
+            <h2>Attendance Form</h2>
+            <div id="userBadge"></div>
+          </div>
+          <div class="between">
+            <a id="adminLink" class="hidden" href="/admin.html">Open Quick Admin</a>
+            <button id="logoutBtn" type="button">Logout</button>
+          </div>
+        </div>
+
+        <label>Note (optional)
+          <input id="note" type="text" placeholder="Remarks" />
+        </label>
+
+        <div class="camera-grid">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" width="640" height="480"></canvas>
+        </div>
+        <p class="hint" id="browserHint">
+          If camera is blocked, use fallback photo upload below. If opened inside Messenger/Facebook app, open in
+          Safari/Chrome first.
+        </p>
+        <button id="openExternalBtn" type="button" class="secondary hidden">Copy Link and Open in Safari/Chrome</button>
+        <label>Fallback Photo Upload
+          <input id="photoFileInput" type="file" accept="image/*" capture="user" />
+        </label>
+
+        <div class="actions">
+          <button id="startCameraBtn" type="button">Start Camera</button>
+          <button id="captureBtn" type="button">Capture Photo</button>
+          <button id="locationBtn" type="button">Get Accurate Location</button>
+          <button id="submitBtn" type="button">Submit Attendance</button>
+          <button id="setOfficeBtn" type="button" class="secondary">Set Office Ref From Current GPS</button>
+        </div>
+
+        <div class="status" id="status">Status: waiting</div>
+        <div class="info" id="info"></div>
+      </section>
+
+      <section class="card hidden" id="myAttendanceCard">
+        <h2>My Attendance</h2>
+        <label>Date
+          <input id="dateFilter" type="date" />
+        </label>
+        <button id="loadRecordsBtn" type="button">Load My Records</button>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Distance (m)</th>
+                <th>GPS Acc (m)</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js?v=20260306-18"></script>
+  </body>
+</html>

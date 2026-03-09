@@ -1,0 +1,18 @@
+{
+  "name": "DepEd Marinduque Attendance",
+  "short_name": "DepEd Attend",
+  "description": "Attendance monitoring with photo and GPS location validation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef2f7",
+  "theme_color": "#0056b3",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

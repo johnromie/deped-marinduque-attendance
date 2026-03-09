@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: deped-marinduque-attendance
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/version
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: true

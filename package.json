@@ -1,0 +1,46 @@
+{
+  "name": "deped-marinduque-attendance",
+  "version": "1.0.0",
+  "description": "Attendance monitoring with photo and geolocation for DepEd Marinduque",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "start:win": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && node server.js",
+    "dev:win": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && node server.js",
+    "start:cloudflare": "tools\\cloudflared.exe tunnel --url http://localhost:4000 --no-autoupdate --metrics localhost:0",
+    "start:public:cf": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"npm:start\" \"npm:start:cloudflare\"",
+    "start:tunnel": "lt --port 4000",
+    "start:public": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"npm:start\" \"npm:start:tunnel\"",
+    "tunnel:only": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && lt --port 4000",
+    "cap:doctor": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap doctor",
+    "cap:add:android": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap add android",
+    "cap:add:ios": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap add ios",
+    "cap:sync": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap sync",
+    "cap:open:android": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap open android",
+    "cap:open:ios": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && npx cap open ios",
+    "dev:stable": "set \"PATH=%LOCALAPPDATA%\\nodejs\\node-v22.22.0-win-x64;%PATH%\" && concurrently \"nodemon server.js\" \"tools\\cloudflared.exe tunnel --url http://localhost:4000 --no-autoupdate --metrics localhost:0\"",
+    "public:start": "scripts\\run-public.cmd",
+    "public:stop": "scripts\\stop-public.cmd",
+    "public:url": "scripts\\get-public-url.cmd",
+    "public:autostart": "scripts\\install-autostart.cmd"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "localtunnel": "^2.0.2",
+    "multer": "^1.4.5-lts.2",
+    "nodemon": "^3.1.10",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

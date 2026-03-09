@@ -1,0 +1,66 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0056b3" />
+    <title>Quick Admin - DepEd Attendance</title>
+    <link rel="stylesheet" href="/styles.css?v=20260306-8" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <div class="between">
+          <div>
+            <h1>Quick Admin</h1>
+            <p id="adminUserInfo">Checking admin session...</p>
+          </div>
+          <div class="between">
+            <a href="/">Back to Attendance</a>
+            <button id="logoutBtn" type="button">Logout</button>
+          </div>
+        </div>
+
+        <label>Date
+          <input id="dateFilter" type="date" />
+        </label>
+        <label>Month (for print)
+          <input id="monthFilter" type="month" />
+        </label>
+        <label>Employee ID (optional)
+          <input id="employeeIdFilter" type="text" placeholder="DEPED-001" />
+        </label>
+
+        <div class="actions">
+          <button id="loadBtn" type="button">Load All Records</button>
+          <button id="summaryBtn" type="button">Load Today Summary</button>
+        </div>
+
+        <div class="status" id="status">Status: waiting</div>
+        <div class="info" id="info"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Employee</th>
+                <th>AM In</th>
+                <th>Noon Out</th>
+                <th>PM In</th>
+                <th>PM Out</th>
+                <th>Status</th>
+                <th>Photo</th>
+                <th>Map</th>
+                <th>Print DTR</th>
+              </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/admin.js?v=20260306-7"></script>
+  </body>
+</html>
