@@ -1331,13 +1331,24 @@ app.post('/api/auth/forgot-password', (req, res) => {
   }
 
   const user = users[index];
-  if (hashSecurityAnswer(securityAnswer) !== user.securityAnswerHash) {
+  const providedAnswerHash = hashSecurityAnswer(securityAnswer);
+  const matchesStoredAnswer = providedAnswerHash === user.securityAnswerHash;
+  const matchesAdminEnvAnswer =
+    user.role === 'admin' &&
+    user.username === config.adminUsername &&
+    String(securityAnswer || '').trim().toLowerCase() === String(config.adminSecurityAnswer || '').trim().toLowerCase();
+
+  if (!matchesStoredAnswer && !matchesAdminEnvAnswer) {
     return res.status(401).json({ message: 'Incorrect security answer.' });
   }
 
   const { salt, hash } = hashPassword(String(newPassword));
   user.passwordSalt = salt;
   user.passwordHash = hash;
+  if (matchesAdminEnvAnswer && !matchesStoredAnswer) {
+    // Keep admin recovery aligned with current environment config.
+    user.securityAnswerHash = hashSecurityAnswer(config.adminSecurityAnswer);
+  }
   users[index] = user;
   writeJsonArray(usersFile, users);
 
