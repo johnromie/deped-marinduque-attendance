@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,145 +11,207 @@
     <link rel="icon" type="image/svg+xml" href="/icons/app-icon.svg" />
     <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260306-9" />
+    <link rel="stylesheet" href="/styles.css?v=20260309-20" />
   </head>
-  <body>
-    <main class="container">
-      <section class="card" id="authCard">
-        <h1>DepEd Marinduque Attendance Monitoring</h1>
-        <p>Login with your account to submit attendance.</p>
-        <p class="hint" id="buildInfo">Build: loading...</p>
-
-        <div class="tabs">
-          <button class="tab active" data-tab="login">Login</button>
-          <button class="tab" data-tab="register">Register</button>
-          <button class="tab" data-tab="forgot">Forgot Password</button>
-          <button class="tab" data-tab="change">Change Password</button>
+  <body class="attendance-app">
+    <main class="app-shell">
+      <aside class="brand-rail">
+        <div class="brand-block">
+          <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="brand-logo" />
+          <h1>DepEd Marinduque</h1>
+          <p>Attendance Portal</p>
+          <small>Secure Work-From-Office Monitoring</small>
         </div>
+      </aside>
 
-        <div class="tab-panel" id="panel-login">
-          <label>Username
-            <input id="loginUsername" type="text" autocomplete="username" />
-          </label>
-          <label>Password
-            <input id="loginPassword" type="password" autocomplete="current-password" />
-          </label>
-          <button id="loginBtn" type="button">Login</button>
-        </div>
-
-        <div class="tab-panel hidden" id="panel-register">
-          <label>Employee ID
-            <input id="regEmployeeId" type="text" placeholder="DEPED-001" />
-          </label>
-          <label>Full Name
-            <input id="regFullName" type="text" placeholder="Juan Dela Cruz" />
-          </label>
-          <label>Username
-            <input id="regUsername" type="text" autocomplete="username" />
-          </label>
-          <label>Password (min 8 chars)
-            <input id="regPassword" type="password" autocomplete="new-password" />
-          </label>
-          <label>Security Question
-            <input id="regQuestion" type="text" placeholder="What is your favorite color?" />
-          </label>
-          <label>Security Answer
-            <input id="regAnswer" type="text" />
-          </label>
-          <button id="registerBtn" type="button">Create Account</button>
-        </div>
-
-        <div class="tab-panel hidden" id="panel-forgot">
-          <label>Username
-            <input id="forgotUsername" type="text" autocomplete="username" />
-          </label>
-          <label>Security Answer
-            <input id="forgotAnswer" type="text" />
-          </label>
-          <label>New Password
-            <input id="forgotNewPassword" type="password" autocomplete="new-password" />
-          </label>
-          <button id="forgotBtn" type="button">Reset Password</button>
-        </div>
-
-        <div class="tab-panel hidden" id="panel-change">
-          <label>Old Password
-            <input id="changeOldPassword" type="password" autocomplete="current-password" />
-          </label>
-          <label>New Password
-            <input id="changeNewPassword" type="password" autocomplete="new-password" />
-          </label>
-          <button id="changeBtn" type="button">Change Password</button>
-        </div>
-
-        <div class="status" id="authStatus">Auth Status: not logged in</div>
-      </section>
-
-      <section class="card hidden" id="appCard">
-        <div class="between">
-          <div>
-            <h2>Attendance Form</h2>
-            <div id="userBadge"></div>
+      <section class="workspace">
+        <section class="card auth-card" id="authCard">
+          <div class="auth-head">
+            <div>
+              <h2>Welcome Back</h2>
+              <p>Sign in to continue your attendance logging.</p>
+            </div>
+            <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="auth-logo" />
           </div>
-          <div class="between">
-            <a id="adminLink" class="hidden" href="/admin.html">Open Quick Admin</a>
-            <button id="logoutBtn" type="button">Logout</button>
+
+          <p class="hint" id="buildInfo">Build: loading...</p>
+
+          <div class="tabs">
+            <button class="tab active" data-tab="login">Login</button>
+            <button class="tab" data-tab="register">Register</button>
+            <button class="tab" data-tab="forgot">Forgot Password</button>
+            <button class="tab" data-tab="change">Change Password</button>
           </div>
-        </div>
 
-        <label>Note (optional)
-          <input id="note" type="text" placeholder="Remarks" />
-        </label>
+          <div class="tab-panel" id="panel-login">
+            <label>Username
+              <input id="loginUsername" type="text" autocomplete="username" />
+            </label>
+            <label>Password
+              <input id="loginPassword" type="password" autocomplete="current-password" />
+            </label>
+            <button id="loginBtn" type="button">Sign In</button>
+          </div>
 
-        <div class="camera-grid">
-          <video id="video" autoplay playsinline></video>
-          <canvas id="canvas" width="640" height="480"></canvas>
-        </div>
-        <p class="hint" id="browserHint">
-          If camera is blocked, use fallback photo upload below. If opened inside Messenger/Facebook app, open in
-          Safari/Chrome first.
-        </p>
-        <button id="openExternalBtn" type="button" class="secondary hidden">Copy Link and Open in Safari/Chrome</button>
-        <label>Fallback Photo Upload
-          <input id="photoFileInput" type="file" accept="image/*" capture="user" />
-        </label>
+          <div class="tab-panel hidden" id="panel-register">
+            <label>Employee ID
+              <input id="regEmployeeId" type="text" placeholder="DEPED-001" />
+            </label>
+            <label>Full Name
+              <input id="regFullName" type="text" placeholder="Juan Dela Cruz" />
+            </label>
+            <label>Username
+              <input id="regUsername" type="text" autocomplete="username" />
+            </label>
+            <label>Password (min 8 chars)
+              <input id="regPassword" type="password" autocomplete="new-password" />
+            </label>
+            <label>Security Question
+              <input id="regQuestion" type="text" placeholder="What is your favorite color?" />
+            </label>
+            <label>Security Answer
+              <input id="regAnswer" type="text" />
+            </label>
+            <button id="registerBtn" type="button">Create Account</button>
+          </div>
 
-        <div class="actions">
-          <button id="startCameraBtn" type="button">Start Camera</button>
-          <button id="captureBtn" type="button">Capture Photo</button>
-          <button id="locationBtn" type="button">Get Accurate Location</button>
-          <button id="submitBtn" type="button">Submit Attendance</button>
-          <button id="setOfficeBtn" type="button" class="secondary">Set Office Ref From Current GPS</button>
-        </div>
+          <div class="tab-panel hidden" id="panel-forgot">
+            <label>Username
+              <input id="forgotUsername" type="text" autocomplete="username" />
+            </label>
+            <label>Security Answer
+              <input id="forgotAnswer" type="text" />
+            </label>
+            <label>New Password
+              <input id="forgotNewPassword" type="password" autocomplete="new-password" />
+            </label>
+            <button id="forgotBtn" type="button">Reset Password</button>
+          </div>
 
-        <div class="status" id="status">Status: waiting</div>
-        <div class="info" id="info"></div>
-      </section>
+          <div class="tab-panel hidden" id="panel-change">
+            <label>Old Password
+              <input id="changeOldPassword" type="password" autocomplete="current-password" />
+            </label>
+            <label>New Password
+              <input id="changeNewPassword" type="password" autocomplete="new-password" />
+            </label>
+            <button id="changeBtn" type="button">Change Password</button>
+          </div>
 
-      <section class="card hidden" id="myAttendanceCard">
-        <h2>My Attendance</h2>
-        <label>Date
-          <input id="dateFilter" type="date" />
-        </label>
-        <button id="loadRecordsBtn" type="button">Load My Records</button>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Distance (m)</th>
-                <th>GPS Acc (m)</th>
-                <th>Location</th>
-              </tr>
-            </thead>
-            <tbody id="recordsBody"></tbody>
-          </table>
-        </div>
+          <div class="status" id="authStatus">Auth Status: not logged in</div>
+        </section>
+
+        <section class="card dashboard-card hidden" id="appCard">
+          <header class="top-hero">
+            <div class="hero-copy">
+              <p class="hero-greet" id="greetingText">Good day</p>
+              <h2 id="displayName">Attendance Dashboard</h2>
+              <div id="userBadge"></div>
+            </div>
+            <div class="hero-time">
+              <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="hero-logo" />
+              <div>
+                <div class="live-time" id="liveTime">--:--:--</div>
+                <div class="live-date" id="liveDate">Loading date...</div>
+              </div>
+            </div>
+            <div class="hero-actions">
+              <a id="adminLink" class="hidden" href="/admin.html">Open Quick Admin</a>
+              <button id="logoutBtn" type="button">Logout</button>
+            </div>
+          </header>
+
+          <section class="metric-grid">
+            <article class="metric-card metric-primary">
+              <p>Hours Today</p>
+              <h3 id="hoursToday">0.0 hrs</h3>
+            </article>
+            <article class="metric-card metric-success">
+              <p>Days This Month</p>
+              <h3 id="daysThisMonth">0 day</h3>
+            </article>
+            <article class="metric-card metric-light">
+              <p>Total Logs Today</p>
+              <h3 id="totalLogsToday">0</h3>
+            </article>
+            <article class="metric-card metric-light">
+              <p>On-Time Rate</p>
+              <h3 id="onTimeRate">0%</h3>
+            </article>
+          </section>
+
+          <section class="feature-grid">
+            <article class="panel">
+              <h3>Capture Attendance</h3>
+              <label>Note (optional)
+                <input id="note" type="text" placeholder="Remarks" />
+              </label>
+
+              <div class="camera-grid">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" width="640" height="480"></canvas>
+              </div>
+              <p class="hint" id="browserHint">
+                If camera is blocked, use fallback photo upload below. If opened inside Messenger/Facebook app, open in
+                Safari/Chrome first.
+              </p>
+              <button id="openExternalBtn" type="button" class="secondary hidden">Copy Link and Open in Safari/Chrome</button>
+              <label>Fallback Photo Upload
+                <input id="photoFileInput" type="file" accept="image/*" capture="user" />
+              </label>
+
+              <div class="actions">
+                <button id="startCameraBtn" type="button">Start Camera</button>
+                <button id="captureBtn" type="button">Capture Photo</button>
+                <button id="locationBtn" type="button">Get Accurate Location</button>
+                <button id="submitBtn" type="button">Submit Attendance</button>
+              </div>
+            </article>
+
+            <article class="panel panel-stack">
+              <h3>Today's Status</h3>
+              <div class="timeline-list" id="todayTimeline">
+                <div class="timeline-item pending">No logs yet today.</div>
+              </div>
+              <button id="setOfficeBtn" type="button" class="secondary">Set Office Ref From Current GPS</button>
+              <div class="status" id="status">Status: waiting</div>
+              <div class="info" id="info"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="card history-card hidden" id="myAttendanceCard">
+          <div class="history-head">
+            <div>
+              <h2>My Attendance History</h2>
+              <p>Review your logs, status, and GPS validation.</p>
+            </div>
+            <div class="history-actions">
+              <label>Date
+                <input id="dateFilter" type="date" />
+              </label>
+              <button id="loadRecordsBtn" type="button">Load My Records</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Distance (m)</th>
+                  <th>GPS Acc (m)</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody id="recordsBody"></tbody>
+            </table>
+          </div>
+        </section>
       </section>
     </main>
 
-    <script src="/app.js?v=20260309-19"></script>
+    <script src="/app.js?v=20260309-20"></script>
   </body>
 </html>

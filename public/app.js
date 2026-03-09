@@ -18,6 +18,15 @@ const browserHint = document.getElementById('browserHint');
 const setOfficeBtn = document.getElementById('setOfficeBtn');
 const openExternalBtn = document.getElementById('openExternalBtn');
 const buildInfo = document.getElementById('buildInfo');
+const greetingTextEl = document.getElementById('greetingText');
+const displayNameEl = document.getElementById('displayName');
+const liveTimeEl = document.getElementById('liveTime');
+const liveDateEl = document.getElementById('liveDate');
+const hoursTodayEl = document.getElementById('hoursToday');
+const daysThisMonthEl = document.getElementById('daysThisMonth');
+const totalLogsTodayEl = document.getElementById('totalLogsToday');
+const onTimeRateEl = document.getElementById('onTimeRate');
+const todayTimelineEl = document.getElementById('todayTimeline');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -25,6 +34,7 @@ let photoBlob = null;
 let latestLocation = null;
 let officeConfig = null;
 let cameraStream = null;
+let clockTimer = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 25;
 
@@ -116,6 +126,197 @@ function clearAttendanceState() {
   setInfo('');
 }
 
+function getManilaDateParts(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  }).formatToParts(date);
+
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== 'literal') map[p.type] = p.value;
+  }
+
+  return {
+    year: Number(map.year),
+    monthName: map.month || '',
+    monthNumber: String(date.toLocaleString('en-US', { month: '2-digit', timeZone: 'Asia/Manila' })),
+    day: Number(map.day),
+    weekday: map.weekday || '',
+    hour: map.hour || '',
+    minute: map.minute || '',
+    second: map.second || '',
+    dayPeriod: map.dayPeriod || ''
+  };
+}
+
+function manilaDateKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date);
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== 'literal') map[p.type] = p.value;
+  }
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function formatManilaTime(value) {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).format(new Date(value));
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function updateLiveClock() {
+  const p = getManilaDateParts(new Date());
+  if (liveTimeEl) liveTimeEl.textContent = `${p.hour}:${p.minute}:${p.second} ${p.dayPeriod}`;
+  if (liveDateEl) liveDateEl.textContent = `${p.weekday}, ${p.monthName} ${p.day}, ${p.year}`;
+  if (greetingTextEl) {
+    const hour24 = Number(
+      new Date().toLocaleString('en-US', {
+        hour: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Manila'
+      })
+    );
+    const greeting = hour24 < 12 ? 'Good Morning' : hour24 < 18 ? 'Good Afternoon' : 'Good Evening';
+    greetingTextEl.textContent = greeting;
+  }
+}
+
+function startLiveClock() {
+  if (clockTimer) clearInterval(clockTimer);
+  updateLiveClock();
+  clockTimer = setInterval(updateLiveClock, 1000);
+}
+
+function stopLiveClock() {
+  if (clockTimer) {
+    clearInterval(clockTimer);
+    clockTimer = null;
+  }
+}
+
+function resetDashboardSummary() {
+  if (hoursTodayEl) hoursTodayEl.textContent = '0.0 hrs';
+  if (daysThisMonthEl) daysThisMonthEl.textContent = '0 day';
+  if (totalLogsTodayEl) totalLogsTodayEl.textContent = '0';
+  if (onTimeRateEl) onTimeRateEl.textContent = '0%';
+  if (todayTimelineEl) todayTimelineEl.innerHTML = '<div class="timeline-item pending">No logs yet today.</div>';
+}
+
+function computeHours(records) {
+  if (!Array.isArray(records) || !records.length) return 0;
+  const sorted = [...records].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso));
+  let totalMinutes = 0;
+  for (let i = 0; i < sorted.length - 1; i += 2) {
+    const start = new Date(sorted[i].timestampIso).getTime();
+    const end = new Date(sorted[i + 1].timestampIso).getTime();
+    const diffMin = Math.max(0, (end - start) / 60000);
+    if (diffMin > 0 && diffMin <= 8 * 60) totalMinutes += diffMin;
+  }
+  return totalMinutes / 60;
+}
+
+function renderTimeline(records) {
+  if (!todayTimelineEl) return;
+  if (!records.length) {
+    todayTimelineEl.innerHTML = '<div class="timeline-item pending">No logs yet today.</div>';
+    return;
+  }
+
+  const sorted = [...records].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso));
+  todayTimelineEl.innerHTML = sorted
+    .map((r) => {
+      const type = escapeHtml(r.attendanceTypeLabel || r.attendanceType || 'Attendance');
+      const status = escapeHtml(r.attendanceStatus || 'DONE');
+      const time = escapeHtml(formatManilaTime(r.timestampIso));
+      return `<div class="timeline-item done">${time} - ${type} <small>(${status})</small></div>`;
+    })
+    .join('');
+}
+
+function updateDashboardSummary(todayRecords, allRecords) {
+  const monthNow = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit'
+  }).format(new Date());
+  const monthlyRecords = allRecords.filter((r) => String(manilaDateKey(r.timestampIso)).slice(0, 7) === monthNow);
+
+  const uniqueDaysMap = new Map();
+  for (const rec of monthlyRecords) {
+    const key = manilaDateKey(rec.timestampIso);
+    if (!uniqueDaysMap.has(key)) uniqueDaysMap.set(key, []);
+    uniqueDaysMap.get(key).push(rec);
+  }
+
+  let onTimeDays = 0;
+  uniqueDaysMap.forEach((dayRecords) => {
+    const first = [...dayRecords].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso))[0];
+    if (!first) return;
+    const hm = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Manila',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date(first.timestampIso));
+    const [h, m] = hm.split(':').map(Number);
+    const mins = h * 60 + m;
+    if (mins <= 8 * 60 + 15) onTimeDays += 1;
+  });
+
+  const totalDays = uniqueDaysMap.size;
+  const rate = totalDays ? Math.round((onTimeDays / totalDays) * 100) : 0;
+  const hoursToday = computeHours(todayRecords);
+
+  if (hoursTodayEl) hoursTodayEl.textContent = `${hoursToday.toFixed(1)} hrs`;
+  if (daysThisMonthEl) daysThisMonthEl.textContent = `${totalDays} ${totalDays === 1 ? 'day' : 'days'}`;
+  if (totalLogsTodayEl) totalLogsTodayEl.textContent = String(todayRecords.length);
+  if (onTimeRateEl) onTimeRateEl.textContent = `${rate}%`;
+  renderTimeline(todayRecords);
+}
+
+async function refreshDashboardFromRecords(currentRecords = []) {
+  if (!currentUser) return;
+  const todayKey = manilaDateKey(new Date());
+  let allRecords = Array.isArray(currentRecords) ? [...currentRecords] : [];
+
+  try {
+    const allPayload = await api('/api/attendance');
+    if (Array.isArray(allPayload.records)) allRecords = allPayload.records;
+  } catch {
+    // Keep current list if full history endpoint is unavailable.
+  }
+
+  const todayRecords = allRecords.filter((r) => manilaDateKey(r.timestampIso) === todayKey);
+  updateDashboardSummary(todayRecords, allRecords);
+}
+
 function renderAuthState() {
   const loggedIn = Boolean(currentUser && authToken);
   authCard.classList.toggle('hidden', loggedIn);
@@ -125,15 +326,20 @@ function renderAuthState() {
   if (loggedIn) {
     setAuthStatus(`logged in as ${currentUser.username}`);
     userBadge.textContent = `${currentUser.fullName} (${currentUser.employeeId}) | Role: ${currentUser.role}`;
+    if (displayNameEl) displayNameEl.textContent = currentUser.fullName || currentUser.username || 'Attendance Dashboard';
     const isAdmin = currentUser.role === 'admin';
     adminLink.classList.toggle('hidden', !isAdmin);
     setOfficeBtn.classList.toggle('hidden', !isAdmin);
+    startLiveClock();
   } else {
     setAuthStatus('not logged in');
     userBadge.textContent = '';
+    if (displayNameEl) displayNameEl.textContent = 'Attendance Dashboard';
     adminLink.classList.add('hidden');
     setOfficeBtn.classList.add('hidden');
     clearAttendanceState();
+    stopLiveClock();
+    resetDashboardSummary();
   }
 }
 
@@ -544,7 +750,8 @@ async function loadRecords() {
 
   try {
     const payload = await api(`/api/attendance${qs}`);
-    recordsBody.innerHTML = payload.records
+    const records = Array.isArray(payload.records) ? payload.records : [];
+    recordsBody.innerHTML = records
       .map((r) => {
         const mapLink = `https://maps.google.com/?q=${r.latitude},${r.longitude}`;
         return `
@@ -560,7 +767,8 @@ async function loadRecords() {
       })
       .join('');
 
-    if (!payload.records.length) recordsBody.innerHTML = '<tr><td colspan="6">No records found.</td></tr>';
+    if (!records.length) recordsBody.innerHTML = '<tr><td colspan="6">No records found.</td></tr>';
+    await refreshDashboardFromRecords(records);
   } catch (err) {
     setStatus('load error');
     setInfo(err.message || 'Failed to load records');
@@ -621,7 +829,7 @@ if (openExternalBtn) {
 }
 
 canvas.classList.add('hidden-canvas');
-dateFilterInput.value = new Date().toISOString().slice(0, 10);
+dateFilterInput.value = manilaDateKey(new Date());
 activateTab('login');
 renderAuthState();
 
