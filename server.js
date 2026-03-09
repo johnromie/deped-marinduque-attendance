@@ -943,7 +943,7 @@ app.post('/api/auth/register', (req, res) => {
   res.status(201).json({ message: 'Account created successfully.', token, user: sanitizeUser(user) });
 });
 
-app.post('/api/auth/login', (req, res) => {
+function handlePasswordLogin(req, res) {
   const { username, password } = req.body || {};
   if (!username || !password) {
     return res.status(400).json({ message: 'username and password are required.' });
@@ -958,7 +958,11 @@ app.post('/api/auth/login', (req, res) => {
 
   const token = createSessionToken(user);
   res.json({ message: 'Login successful.', token, user: sanitizeUser(user) });
-});
+}
+
+app.post('/api/auth/login', handlePasswordLogin);
+app.post('/api/login', handlePasswordLogin);
+app.post('/auth/login', handlePasswordLogin);
 
 app.post('/api/auth/login/request-code', async (req, res) => {
   try {

@@ -50,28 +50,40 @@ async function api(path, options = {}) {
   const headers = options.headers ? { ...options.headers } : {};
   if (authToken) headers.authorization = `Bearer ${authToken}`;
 
-  const res = await fetch(path, { ...options, headers });
-  const raw = await res.text();
-  let payload = {};
-  try {
-    payload = raw ? JSON.parse(raw) : {};
-  } catch {
-    payload = {};
-  }
+  const method = String(options.method || 'GET').toUpperCase();
+  const retryableStatus = new Set([404, 502, 503, 504]);
+  const canRetry = method === 'GET' || (method === 'POST' && path === '/api/auth/login');
+  const maxRetries = canRetry ? 2 : 0;
 
-  if (!res.ok) {
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    const res = await fetch(path, { ...options, headers });
+    const raw = await res.text();
+    let payload = {};
+    try {
+      payload = raw ? JSON.parse(raw) : {};
+    } catch {
+      payload = {};
+    }
+
+    if (res.ok) return payload;
+
     if (res.status === 401) {
       saveToken('');
       currentUser = null;
       renderAuthState();
     }
+
+    if (canRetry && retryableStatus.has(res.status) && attempt < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 1200 * (attempt + 1)));
+      continue;
+    }
+
     const fallback = raw && !raw.trim().startsWith('<') ? raw.trim() : '';
     if (res.status === 404 && /\/api\/auth\/(login|register)\/request-code/.test(path)) {
       throw new Error('OTP endpoint not found on running server. Restart backend and refresh page.');
     }
-    throw new Error(payload.message || fallback || `Request failed (${res.status}).`);
+    throw new Error(payload.message || fallback || `Request failed (${res.status}) on ${method} ${path}.`);
   }
-  return payload;
 }
 
 async function hardClearLegacyCache() {
