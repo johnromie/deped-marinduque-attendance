@@ -4,75 +4,84 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2f57" />
-    <title>Quick Admin - DepEd Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260310-5" />
+    <title>Admin Dashboard - DepEd Attendance</title>
+    <link rel="stylesheet" href="/styles.css?v=20260310-15" />
   </head>
-  <body class="attendance-app sdo-theme admin-app">
-    <header class="app-topbar">
+  <body class="attendance-app sdo-theme admin-app is-logged-in">
+    <header class="app-topbar admin-topbar">
       <div class="topbar-left">
         <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="topbar-logo" />
         <div>
-          <div class="topbar-title">SDO MARINDUQUE</div>
-          <div class="topbar-subtitle">Attendance Monitoring System</div>
+          <div class="topbar-title">SDO MARINDUQUE ATTENDANCE MONITORING SYSTEM</div>
+          <div class="topbar-subtitle">Administrator Console</div>
         </div>
       </div>
       <div class="topbar-actions">
-        <span class="topbar-pill">Admin Console</span>
+        <span class="topbar-pill" id="adminUserInfo">Checking admin session...</span>
+        <button id="logoutBtn" type="button" class="ghost">Logout</button>
       </div>
-      <nav class="topbar-nav">
-        <a href="#records">Attendance</a>
-        <a href="#filters">Filters</a>
-        <a href="#reports">Reports</a>
+      <nav class="topbar-nav admin-nav">
+        <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+        <a href="#employees" data-section="employees">Employees</a>
+        <a href="#attendance" data-section="dashboard">Attendance</a>
+        <a href="#reports" data-section="reports">Reports</a>
       </nav>
     </header>
 
-    <main class="app-shell">
-      <section class="card admin-panel">
-        <div class="dashboard-header">
+    <main class="admin-shell">
+      <section class="card admin-section" id="dashboard">
+        <div class="admin-header">
           <div>
-            <div class="profile-name">Quick Admin</div>
-            <p id="adminUserInfo" class="profile-meta">Checking admin session...</p>
+            <h2>Attendance Dashboard</h2>
+            <p class="muted">Overview of today's attendance activity.</p>
           </div>
-          <div class="header-actions">
-            <a href="/">Back to Attendance</a>
-            <button id="logoutBtn" type="button">Logout</button>
+          <div class="admin-meta">
+            <span>Current Time: <strong id="adminCurrentTime">--:--</strong></span>
+            <span>Date: <strong id="adminCurrentDate">Loading...</strong></span>
           </div>
         </div>
 
-        <section class="stat-grid admin-stat">
+        <section class="admin-stat-grid">
           <article class="stat-card stat-navy">
             <div>Total Employees</div>
-            <h3>--</h3>
+            <h3 id="adminTotalEmployees">--</h3>
           </article>
           <article class="stat-card stat-green">
             <div>Present Today</div>
-            <h3>--</h3>
+            <h3 id="adminPresent">--</h3>
           </article>
           <article class="stat-card stat-red">
             <div>Late</div>
-            <h3>--</h3>
+            <h3 id="adminLate">--</h3>
           </article>
           <article class="stat-card stat-orange">
             <div>Absent</div>
-            <h3>--</h3>
+            <h3 id="adminAbsent">--</h3>
           </article>
         </section>
 
-        <section class="admin-filters" id="filters">
-          <label>Date
+        <div class="admin-filter-bar" id="attendance">
+          <label class="filter-field">
+            <span>Search Employee</span>
+            <input id="employeeIdFilter" type="text" placeholder="Name or Employee ID" />
+          </label>
+          <label class="filter-field">
+            <span>Select Office</span>
+            <select id="officeFilter">
+              <option value="">All Offices</option>
+              <option>ICT Unit</option>
+              <option>Planning Unit</option>
+              <option>Elementary</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span>Date</span>
             <input id="dateFilter" type="date" />
           </label>
-          <label>Month (for print)
-            <input id="monthFilter" type="month" />
-          </label>
-          <label>Employee ID (optional)
-            <input id="employeeIdFilter" type="text" placeholder="SDO-001" />
-          </label>
-        </section>
-
-        <div class="actions">
-          <button id="loadBtn" type="button">Load All Records</button>
-          <button id="summaryBtn" type="button">Load Today Summary</button>
+          <div class="filter-actions">
+            <button id="loadBtn" type="button">Filter</button>
+            <button id="summaryBtn" type="button" class="secondary">Load Summary</button>
+          </div>
         </div>
 
         <div class="status" id="status">Status: waiting</div>
@@ -90,6 +99,7 @@
                 <th>PM Out</th>
                 <th>Status</th>
                 <th>Photo</th>
+                <th>Location</th>
                 <th>Map</th>
                 <th>Print DTR</th>
               </tr>
@@ -98,8 +108,98 @@
           </table>
         </div>
       </section>
+
+      <section class="card admin-section hidden" id="employees">
+        <div class="admin-header">
+          <div>
+            <h2>Employees List</h2>
+            <p class="muted">Manage employee records and add new staff.</p>
+          </div>
+          <button id="addEmployeeToggle" type="button">Add Employee</button>
+        </div>
+
+        <div class="admin-employee-grid">
+          <div class="employee-list-card">
+            <label class="filter-field">
+              <span>Search Employee</span>
+              <input id="employeeSearch" type="text" placeholder="Search name, ID, or position" />
+            </label>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="employeesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="employee-form-card hidden" id="employeeFormCard">
+            <h3>Add Employee</h3>
+            <label>Full Name
+              <input id="addFullName" type="text" placeholder="Juan Dela Cruz" />
+            </label>
+            <label>Position
+              <input id="addPosition" type="text" placeholder="IT Officer" />
+            </label>
+            <label>Office
+              <input id="addOffice" type="text" placeholder="ICT Unit" />
+            </label>
+            <label>Employee ID
+              <input id="addEmployeeId" type="text" placeholder="SDO-001" />
+            </label>
+            <label>Email
+              <input id="addEmail" type="email" placeholder="name@deped.gov.ph" />
+            </label>
+            <label>Password
+              <input id="addPassword" type="password" placeholder="Password" />
+            </label>
+            <div class="actions">
+              <button id="addEmployeeBtn" type="button">Save</button>
+              <button id="cancelEmployeeBtn" type="button" class="secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card admin-section hidden" id="reports">
+        <div class="admin-header">
+          <div>
+            <h2>Generate Reports</h2>
+            <p class="muted">Select a month and office to generate DTR reports.</p>
+          </div>
+        </div>
+
+        <div class="report-grid">
+          <label>
+            Select Month
+            <input id="monthFilter" type="month" />
+          </label>
+          <label>
+            Select Office
+            <select id="reportOffice">
+              <option value="">All Offices</option>
+              <option>ICT Unit</option>
+              <option>Planning Unit</option>
+              <option>Elementary</option>
+            </select>
+          </label>
+        </div>
+        <div class="report-actions">
+          <button id="generateReportBtn" type="button">Generate Report</button>
+          <button id="downloadReportBtn" type="button" class="secondary">Download PDF</button>
+        </div>
+        <div class="status" id="reportStatus">Report status: waiting</div>
+      </section>
     </main>
 
-    <script src="/admin.js?v=20260310-5"></script>
+    <script src="/admin.js?v=20260310-15"></script>
   </body>
 </html>

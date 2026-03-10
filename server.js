@@ -187,6 +187,33 @@ function normalizePhone(phone) {
   return String(phone || '').replace(/[^\d+]/g, '').trim();
 }
 
+function normalizeUsernameBase(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function generateUniqueUsername(base, users) {
+  const clean = normalizeUsernameBase(base) || 'user';
+  let candidate = clean;
+  let counter = 1;
+  while (users.some((u) => u.username === candidate)) {
+    candidate = `${clean}${counter}`;
+    counter += 1;
+  }
+  return candidate;
+}
+
+function findUserByLoginIdentifier(users, identifier) {
+  const normalized = String(identifier || '').trim().toLowerCase();
+  if (!normalized) return null;
+  let user = users.find((u) => u.username === normalized);
+  if (user) return user;
+  user = users.find((u) => String(u.employeeId || '').trim().toLowerCase() === normalized);
+  return user || null;
+}
+
 function randomOtpCode(length = 6) {
   const size = Math.max(4, Math.min(8, Number(length) || 6));
   let out = '';
@@ -413,6 +440,8 @@ function sanitizeUser(user) {
     fullName: user.fullName,
     employeeId: user.employeeId,
     role: user.role || 'user',
+    position: user.position || '',
+    office: user.office || '',
     otpChannel: user.otpChannel || '',
     emailMasked: maskEmail(user.email || ''),
     phoneMasked: maskPhone(user.phone || ''),
@@ -439,6 +468,14 @@ function ensureUsersRolesAndAdmin() {
     }
     if (typeof user.otpChannel === 'undefined') {
       user.otpChannel = '';
+      changed = true;
+    }
+    if (typeof user.position === 'undefined') {
+      user.position = '';
+      changed = true;
+    }
+    if (typeof user.office === 'undefined') {
+      user.office = '';
       changed = true;
     }
 
@@ -950,8 +987,7 @@ function handlePasswordLogin(req, res) {
   }
 
   const users = readJsonArray(usersFile);
-  const normalizedUsername = String(username).trim().toLowerCase();
-  const user = users.find((u) => u.username === normalizedUsername);
+  const user = findUserByLoginIdentifier(users, username);
   const passwordOk = Boolean(user && verifyPassword(String(password), user.passwordSalt, user.passwordHash));
   if (!user || !passwordOk) {
     // Auto-heal admin password drift: if env admin password is provided and typed correctly,
@@ -992,8 +1028,7 @@ app.post('/api/auth/login/request-code', async (req, res) => {
     }
 
     const users = readJsonArray(usersFile);
-    const normalizedUsername = String(username).trim().toLowerCase();
-    const user = users.find((u) => u.username === normalizedUsername);
+    const user = findUserByLoginIdentifier(users, username);
     if (!user || !verifyPassword(String(password), user.passwordSalt, user.passwordHash)) {
       return res.status(401).json({ message: 'Invalid username or password.' });
     }
@@ -1324,10 +1359,10 @@ app.post('/api/auth/forgot-password', (req, res) => {
   }
 
   const users = readJsonArray(usersFile);
-  const normalizedUsername = String(username).trim().toLowerCase();
-  const index = users.findIndex((u) => u.username === normalizedUsername);
+  const user = findUserByLoginIdentifier(users, username);
+  const index = user ? users.findIndex((u) => u.id === user.id) : -1;
   if (index < 0) {
-    return res.status(404).json({ message: 'Username not found.' });
+    return res.status(404).json({ message: 'Username or Employee ID not found.' });
   }
 
   const user = users[index];
@@ -1457,10 +1492,21 @@ app.post('/api/attendance', requireAuth, upload.single('photo'), (req, res) => {
     const withinSoftRadius = distanceMeters <= office.maxRadiusMeters + softTolerance;
 
     const manila = getManilaDateParts(new Date());
+    const attendanceIntent = String(req.body.attendanceIntent || '').trim().toLowerCase();
     const attendanceType = attendanceTypeByTime(manila.hour, manila.minute);
     if (!attendanceType) {
       return res.status(400).json({
         message: 'Attendance is allowed only during Morning Time In, Noon Time Out, Afternoon Time In, and Afternoon Time Out windows.'
+      });
+    }
+    if (attendanceIntent === 'in' && !['MORNING_IN', 'AFTERNOON_IN'].includes(attendanceType.code)) {
+      return res.status(400).json({
+        message: 'Time In is only allowed during Morning Time In or Afternoon Time In windows.'
+      });
+    }
+    if (attendanceIntent === 'out' && !['NOON_OUT', 'AFTERNOON_OUT'].includes(attendanceType.code)) {
+      return res.status(400).json({
+        message: 'Time Out is only allowed during Noon Time Out or Afternoon Time Out windows.'
       });
     }
 
@@ -1551,9 +1597,62 @@ app.get('/api/admin/users', requireAuth, requireAdmin, (req, res) => {
     username: u.username,
     fullName: u.fullName,
     employeeId: u.employeeId,
-    role: u.role || 'user'
+    role: u.role || 'user',
+    position: u.position || '',
+    office: u.office || '',
+    email: u.email || ''
   }));
   res.json({ count: users.length, users });
+});
+
+app.post('/api/admin/users', requireAuth, requireAdmin, (req, res) => {
+  const { fullName, position, office, employeeId, email, password, username } = req.body || {};
+
+  if (!fullName || !employeeId || !password) {
+    return res.status(400).json({ message: 'fullName, employeeId, and password are required.' });
+  }
+  if (String(password).length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+  }
+  const cleanEmployeeId = String(employeeId).trim();
+  const cleanFullName = String(fullName).trim();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+
+  if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    return res.status(400).json({ message: 'Invalid email format.' });
+  }
+
+  const users = readJsonArray(usersFile);
+  if (users.some((u) => String(u.employeeId).trim() === cleanEmployeeId)) {
+    return res.status(409).json({ message: 'Employee ID already exists.' });
+  }
+
+  const baseUsername = username || cleanEmployeeId || cleanFullName;
+  const generatedUsername = generateUniqueUsername(baseUsername, users);
+  const { salt, hash } = hashPassword(String(password));
+
+  const user = {
+    id: uuidv4(),
+    username: generatedUsername,
+    fullName: cleanFullName,
+    employeeId: cleanEmployeeId,
+    role: 'user',
+    email: cleanEmail,
+    phone: '',
+    otpChannel: cleanEmail ? 'email' : '',
+    passwordSalt: salt,
+    passwordHash: hash,
+    securityQuestion: 'Employee ID',
+    securityAnswerHash: hashSecurityAnswer(cleanEmployeeId),
+    position: String(position || '').trim(),
+    office: String(office || '').trim(),
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(user);
+  writeJsonArray(usersFile, users);
+
+  res.status(201).json({ message: 'Employee created successfully.', user: sanitizeUser(user) });
 });
 
 app.post('/api/admin/archive-month', requireAuth, requireAdmin, (req, res) => {
@@ -1672,9 +1771,44 @@ app.get('/api/admin/archive-month/:month', requireAuth, requireAdmin, (req, res)
 app.get('/api/summary/today', requireAuth, requireAdmin, (req, res) => {
   const today = getManilaDateParts(new Date()).localDate;
   const records = readJsonArray(attendanceFile).filter((r) => r.localDate === today);
+  const users = readJsonArray(usersFile).filter((u) => (u.role || 'user') !== 'admin');
+
+  const statusByUser = new Map();
+  records.forEach((r) => {
+    const key = r.userId || r.employeeId || r.username;
+    if (!key) return;
+    const current = statusByUser.get(key) || [];
+    current.push(r.attendanceStatus);
+    statusByUser.set(key, current);
+  });
+
+  let present = 0;
+  let late = 0;
+  let absent = 0;
+
+  statusByUser.forEach((statuses) => {
+    if (statuses.includes('ON_SITE')) {
+      present += 1;
+      return;
+    }
+    if (statuses.includes('NEEDS_REVIEW')) {
+      late += 1;
+      return;
+    }
+    if (statuses.includes('OFF_SITE')) {
+      absent += 1;
+    }
+  });
+
+  const totalEmployees = users.length;
+  const computedAbsent = Math.max(0, totalEmployees - present - late);
 
   res.json({
     date: today,
+    totalEmployees,
+    present,
+    late,
+    absent: Math.max(absent, computedAbsent),
     total: records.length,
     onSite: records.filter((r) => r.attendanceStatus === 'ON_SITE').length,
     offSite: records.filter((r) => r.attendanceStatus === 'OFF_SITE').length,

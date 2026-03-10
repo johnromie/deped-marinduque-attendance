@@ -535,6 +535,10 @@ th {
   margin-bottom: 12px;
 }
 
+.history-card table {
+  min-width: 520px;
+}
+
 .attendance-app .history-head p {
   color: #607891;
   margin: 6px 0 0;
@@ -913,6 +917,15 @@ th {
   box-shadow: 0 12px 26px rgba(8, 21, 40, 0.35);
 }
 
+/* Hide topbar until logged in (prevents nav on login screen) */
+.attendance-app .app-topbar {
+  display: none;
+}
+
+.attendance-app.is-logged-in .app-topbar {
+  display: flex;
+}
+
 .topbar-left {
   display: flex;
   align-items: center;
@@ -1282,5 +1295,626 @@ th {
   .sdo-theme .dashboard-card,
   .sdo-theme .history-card {
     margin: 14px auto;
+  }
+}
+
+/* --- Employee layout redesign (2026-03-10) --- */
+.attendance-app.is-logged-out .app-topbar,
+.attendance-app.is-logged-out .topbar-nav,
+.attendance-app.is-logged-out .topbar-actions {
+  display: none !important;
+}
+
+.sdo-theme .app-shell {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.sdo-theme .auth-card {
+  grid-column: 1 / -1;
+  max-width: 480px;
+  margin: 40px auto;
+  background: linear-gradient(160deg, #f3f7ff 0%, #ffffff 100%);
+  border: 1px solid #d4def0;
+}
+
+.employee-sidebar {
+  grid-column: 1 / 2;
+  background: linear-gradient(180deg, #22406f 0%, #182f55 100%);
+  color: #e8f0ff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 16px 28px rgba(10, 22, 44, 0.24);
+  position: sticky;
+  top: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.sidebar-brand {
+  display: grid;
+  gap: 6px;
+  align-items: center;
+  text-align: left;
+}
+
+.sidebar-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+}
+
+.sidebar-title {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: #bcd0f2;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8f0ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sidebar-nav a.active,
+.sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-profile {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  text-align: center;
+}
+
+.sidebar-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #fff;
+}
+
+.sidebar-name {
+  font-weight: 800;
+}
+
+.sidebar-role,
+.sidebar-id {
+  font-size: 12px;
+  color: #d4e1ff;
+}
+
+.sidebar-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-actions a,
+.sidebar-actions button {
+  width: 100%;
+  text-align: center;
+}
+
+.employee-main {
+  grid-column: 2 / 3;
+  display: grid;
+  gap: 16px;
+}
+
+.welcome-panel {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f5f8ff;
+  border: 1px solid #d6e0f2;
+  min-width: 220px;
+}
+
+.welcome-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.welcome-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #4d6380;
+  font-size: 13px;
+}
+
+.stat-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stat-amber {
+  background: linear-gradient(180deg, #d79a2f 0%, #b3711f 100%);
+}
+
+.quick-stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.quick-stat {
+  background: #ffffff;
+  border: 1px solid #d6e0f2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: #506784;
+}
+
+.quick-stat strong {
+  font-size: 1rem;
+  color: #1e365d;
+}
+
+.attendance-today {
+  margin-top: 12px;
+}
+
+.attendance-today .panel {
+  background: #f6f8fc;
+  border: 1px solid #d6e0f2;
+}
+
+.map-card {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.map-placeholder {
+  position: relative;
+  border-radius: 14px;
+  min-height: 180px;
+  border: 1px solid #d1ddef;
+  background:
+    linear-gradient(120deg, rgba(203, 224, 250, 0.65), rgba(226, 244, 232, 0.7)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0 12px, rgba(255, 255, 255, 0) 12px 24px);
+  overflow: hidden;
+}
+
+.map-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 18% 20% auto auto;
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(36, 102, 186, 0.18) 0%, rgba(36, 102, 186, 0) 70%);
+}
+
+.map-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: #d84f4f;
+  border-radius: 50%;
+  transform: translate(-50%, -100%);
+  box-shadow: 0 8px 14px rgba(216, 79, 79, 0.35);
+}
+
+.map-pin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  width: 6px;
+  height: 6px;
+  background: #d84f4f;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.map-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.map-meta span {
+  background: #ffffff;
+  border: 1px solid #d6e0f2;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #2a4770;
+}
+
+@media (max-width: 1100px) {
+  .sdo-theme .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-sidebar {
+    position: relative;
+    top: 0;
+  }
+
+  .employee-main {
+    grid-column: auto;
+  }
+
+  .stat-grid-3,
+  .quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .employee-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-grid-3,
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Admin dashboard redesign (2026-03-10) --- */
+.admin-app .app-topbar.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.admin-app {
+  background: linear-gradient(160deg, #edf2fb 0%, #f7f9fc 100%);
+}
+
+.admin-app .topbar-actions {
+  gap: 12px;
+}
+
+.admin-app .topbar-actions .ghost {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.admin-shell {
+  width: min(1320px, 100%);
+  margin: 20px auto 40px;
+  padding: 0 16px 30px;
+}
+
+.admin-dashboard {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-header .muted {
+  color: #5b718c;
+}
+
+.admin-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-weight: 700;
+  color: #2b4466;
+}
+
+.admin-stat-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-filter-bar {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1.4fr 1fr 1fr auto;
+  align-items: end;
+  background: #f5f8ff;
+  border: 1px solid #d6e0f2;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.filter-field span {
+  display: block;
+  font-size: 12px;
+  color: #4d6380;
+  font-weight: 700;
+}
+
+.filter-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-subfilters {
+  display: grid;
+  gap: 8px;
+  max-width: 320px;
+}
+
+.admin-app .table-wrap {
+  border-radius: 12px;
+}
+
+.admin-app .table-wrap table {
+  min-width: 900px;
+}
+
+@media (max-width: 1100px) {
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-meta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* --- Admin sections layout (2026-03-10) --- */
+.admin-section.hidden { display: none; }
+
+.admin-app .admin-nav a.active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.admin-app .topbar-nav a {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.admin-app .topbar-nav a.active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.admin-employee-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1.4fr 0.8fr;
+}
+
+.employee-list-card,
+.employee-form-card {
+  display: grid;
+  gap: 12px;
+}
+
+.employee-form-card {
+  background: #f6f9ff;
+  border: 1px solid #d7e2f3;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.report-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 520px;
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1100px) {
+  .admin-employee-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- User mobile layout (2026-03-10) --- */
+.user-section.hidden {
+  display: none;
+}
+
+.attendance-card .attendance-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.attendance-card .compact-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.time-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.primary-lg {
+  padding: 14px 16px;
+  font-size: 1rem;
+}
+
+.secondary-lg {
+  padding: 14px 16px;
+  font-size: 1rem;
+  background: linear-gradient(180deg, #7b8aa0 0%, #5d6b82 100%);
+}
+
+.welcome-panel.compact {
+  min-width: 220px;
+}
+
+.mobile-nav {
+  position: sticky;
+  bottom: 0;
+  margin-top: 18px;
+  background: #f2f6ff;
+  border: 1px solid #d7e2f3;
+  border-radius: 16px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  box-shadow: 0 10px 24px rgba(12, 24, 45, 0.15);
+}
+
+@media (min-width: 901px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+
+.mobile-nav .nav-item {
+  background: #ffffff;
+  color: #2a4365;
+  border: 1px solid #d7e2f3;
+  border-radius: 12px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.mobile-nav .nav-item.active {
+  background: linear-gradient(180deg, #2b66be 0%, #19488f 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.mobile-nav .nav-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(25, 72, 143, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mobile-nav .nav-item.active .nav-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 1100px) {
+  .attendance-card .attendance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .employee-sidebar {
+    display: none;
+  }
+
+  .employee-main {
+    grid-column: 1 / -1;
+  }
+
+  .app-topbar {
+    padding: 10px 14px;
+  }
+
+  .app-topbar .topbar-title {
+    font-size: 0.9rem;
+  }
+
+  .app-topbar .topbar-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 30;
+  }
+
+  .employee-main {
+    padding-bottom: 90px;
+  }
+}
+
+@media (max-width: 600px) {
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-card .compact-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .time-actions {
+    grid-template-columns: 1fr;
   }
 }

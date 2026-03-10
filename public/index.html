@@ -11,10 +11,10 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260310-5" />
+    <link rel="stylesheet" href="/styles.css?v=20260310-16" />
   </head>
-  <body class="attendance-app sdo-theme">
-    <header class="app-topbar">
+  <body class="attendance-app sdo-theme is-logged-out">
+    <header class="app-topbar hidden">
       <div class="topbar-left">
         <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="topbar-logo" />
         <div>
@@ -23,8 +23,7 @@
         </div>
       </div>
       <div class="topbar-actions">
-        <span class="topbar-pill" id="liveDate">Loading date...</span>
-        <span class="topbar-pill" id="liveTime">--:--:--</span>
+        <span class="topbar-pill" id="greetingText">Good Morning</span>
       </div>
       <nav class="topbar-nav">
         <a href="#dashboard">Dashboard</a>
@@ -54,8 +53,8 @@
         </div>
 
         <div class="tab-panel" id="panel-login">
-          <label>Username
-            <input id="loginUsername" type="text" autocomplete="username" />
+          <label>Username or Employee ID
+            <input id="loginUsername" type="text" autocomplete="username" placeholder="e.g. admin or SDO-001" />
           </label>
           <label>Password
             <input id="loginPassword" type="password" autocomplete="current-password" />
@@ -86,8 +85,8 @@
         </div>
 
         <div class="tab-panel hidden" id="panel-forgot">
-          <label>Username
-            <input id="forgotUsername" type="text" autocomplete="username" />
+          <label>Username or Employee ID
+            <input id="forgotUsername" type="text" autocomplete="username" placeholder="e.g. admin or SDO-001" />
           </label>
           <label>Security Answer
             <input id="forgotAnswer" type="text" />
@@ -111,8 +110,35 @@
         <div class="status" id="authStatus">Auth Status: not logged in</div>
       </section>
 
-      <section class="card dashboard-card hidden" id="appCard">
+      <aside class="employee-sidebar hidden" id="employeeSidebar">
+        <div class="sidebar-brand">
+          <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="sidebar-logo" />
+          <div class="sidebar-title">SDO MARINDUQUE</div>
+          <div class="sidebar-subtitle">Attendance Monitoring System</div>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#dashboard" class="active">Dashboard</a>
+          <a href="#attendance">Mark Attendance</a>
+          <a href="#history">My Attendance Records</a>
+          <a href="#reports">Reports</a>
+          <a href="#profile">Profile</a>
+        </nav>
+        <div class="sidebar-profile">
+          <img src="/icons/sdo-marinduque.jpg" alt="Profile" class="sidebar-avatar" />
+          <div class="sidebar-name" id="sidebarName">Employee</div>
+          <div class="sidebar-role" id="sidebarRole">ICT Unit</div>
+          <div class="sidebar-id" id="sidebarId">SDO-001</div>
+        </div>
+        <div class="sidebar-actions">
+          <a id="adminLink" class="hidden" href="/admin.html">Quick Admin</a>
+          <button id="logoutBtn" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <div class="employee-main hidden" id="employeeMain">
+      <section class="card dashboard-card user-section hidden" id="appCard" data-section="dashboard">
         <div id="dashboard" class="anchor"></div>
+        <div id="profile" class="anchor"></div>
         <div class="dashboard-header">
           <div class="profile-card">
             <img src="/icons/sdo-marinduque.jpg" alt="Profile" class="profile-photo" />
@@ -122,29 +148,57 @@
               <div class="profile-meta">SDO-001</div>
             </div>
           </div>
-          <div class="header-actions">
-            <a id="adminLink" class="hidden" href="/admin.html">Open Quick Admin</a>
-            <button id="logoutBtn" type="button">Logout</button>
+          <div class="welcome-panel">
+            <div class="welcome-title">Welcome back, <span id="welcomeName">Employee</span>!</div>
+            <div class="welcome-meta">
+              <span>Stay on time and keep your logs accurate.</span>
+            </div>
           </div>
         </div>
 
-        <section class="stat-grid">
-          <article class="stat-card stat-navy">
-            <div>Hours Today</div>
-            <h3 id="hoursToday">0.0 hrs</h3>
-          </article>
+        <section class="stat-grid stat-grid-3">
           <article class="stat-card stat-green">
-            <div>Days This Month</div>
-            <h3 id="daysThisMonth">0 day</h3>
+            <div>Total Days Present</div>
+            <h3 id="daysThisMonth">0</h3>
+          </article>
+          <article class="stat-card stat-amber">
+            <div>Late Count</div>
+            <h3 id="lateCount">0</h3>
           </article>
           <article class="stat-card stat-red">
-            <div>On-Time Rate</div>
-            <h3 id="onTimeRate">0%</h3>
+            <div>Absent</div>
+            <h3 id="absentCount">0</h3>
           </article>
-          <article class="stat-card stat-orange">
-            <div>Total Logs Today</div>
-            <h3 id="totalLogsToday">0</h3>
-          </article>
+        </section>
+
+        <section class="quick-stats">
+          <div class="quick-stat">
+            <span>Current Time</span>
+            <strong id="liveTime">--:--:--</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Date</span>
+            <strong id="liveDate">Loading date...</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Total Logs Today</span>
+            <strong id="totalLogsToday">0</strong>
+          </div>
+        </section>
+
+        <section class="attendance-today">
+          <div class="panel">
+            <h3>Attendance Today</h3>
+            <div class="map-card">
+              <div class="map-placeholder">
+                <div class="map-pin"></div>
+              </div>
+              <div class="map-meta">
+                <span>Mobile Photo</span>
+                <span>Map</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section class="install-card hidden" id="installCard">
@@ -159,9 +213,39 @@
           </div>
         </section>
 
-        <section class="dashboard-grid" id="attendance">
+        <section class="support-strip">
+          <div>
+            <h3>Need Help?</h3>
+            <p class="muted">Contact the ICT support desk for device or login assistance.</p>
+          </div>
+          <div class="support-actions">
+            <div class="support-tile">ICT Support: 09XX-XXX-XXXX</div>
+            <div class="support-tile">Email: support@deped-marinduque.ph</div>
+          </div>
+        </section>
+      </section>
+
+      <section class="card attendance-card user-section hidden" id="attendanceCard" data-section="attendance">
+        <div id="attendance" class="anchor"></div>
+        <div class="dashboard-header">
+          <div class="profile-card">
+            <img src="/icons/sdo-marinduque.jpg" alt="Profile" class="profile-photo" />
+            <div>
+              <div class="profile-name" id="attendanceName">Attendance Capture</div>
+              <div class="profile-meta">Capture photo and GPS before time-in/out.</div>
+            </div>
+          </div>
+          <div class="welcome-panel compact">
+            <div class="welcome-title">Location</div>
+            <div class="welcome-meta">
+              <span id="officeNameDisplay">DepEd Marinduque Division Office</span>
+            </div>
+          </div>
+        </div>
+
+        <section class="attendance-grid">
           <article class="panel">
-            <h3>Capture Attendance</h3>
+            <h3>Mark Attendance</h3>
             <label>Note (optional)
               <input id="note" type="text" placeholder="Remarks" />
             </label>
@@ -179,11 +263,15 @@
               <input id="photoFileInput" type="file" accept="image/*" capture="user" />
             </label>
 
-            <div class="actions">
+            <div class="actions compact-actions">
               <button id="startCameraBtn" type="button">Start Camera</button>
               <button id="captureBtn" type="button">Capture Photo</button>
               <button id="locationBtn" type="button">Get Accurate Location</button>
-              <button id="submitBtn" type="button">Submit Attendance</button>
+            </div>
+
+            <div class="time-actions">
+              <button id="markInBtn" type="button" class="primary-lg">Mark Time In</button>
+              <button id="markOutBtn" type="button" class="secondary-lg">Mark Time Out</button>
             </div>
           </article>
 
@@ -193,31 +281,19 @@
               <div class="timeline-item pending">No logs yet today.</div>
             </div>
             <div class="location-panel">
-              <div class="location-title" id="officeNameDisplay">DepEd Marinduque Division Office</div>
               <div class="status" id="status">Status: waiting</div>
               <div class="info" id="info"></div>
             </div>
             <button id="setOfficeBtn" type="button" class="secondary">Set Office Ref From Current GPS</button>
           </article>
         </section>
-
-        <section class="support-strip" id="reports">
-          <div>
-            <h3>Need Help?</h3>
-            <p class="muted">Contact the ICT support desk for device or login assistance.</p>
-          </div>
-          <div class="support-actions">
-            <div class="support-tile">ICT Support: 09XX-XXX-XXXX</div>
-            <div class="support-tile">Email: support@deped-marinduque.ph</div>
-          </div>
-        </section>
       </section>
 
-      <section class="card history-card hidden" id="myAttendanceCard">
+      <section class="card history-card user-section hidden" id="myAttendanceCard" data-section="records">
         <div id="history" class="anchor"></div>
         <div class="history-head">
           <div>
-            <h2>My Attendance History</h2>
+            <h2>My Attendance Records</h2>
             <p>Review your logs, status, and GPS validation.</p>
           </div>
           <div class="history-actions">
@@ -231,20 +307,34 @@
           <table>
             <thead>
               <tr>
-                <th>Time</th>
-                <th>Type</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
                 <th>Status</th>
-                <th>Distance (m)</th>
-                <th>GPS Acc (m)</th>
-                <th>Location</th>
               </tr>
             </thead>
             <tbody id="recordsBody"></tbody>
           </table>
         </div>
       </section>
+
+      <nav class="mobile-nav hidden" id="userNav">
+        <button type="button" data-section="dashboard" class="nav-item active">
+          <span class="nav-icon">D</span>
+          <span>Dashboard</span>
+        </button>
+        <button type="button" data-section="attendance" class="nav-item">
+          <span class="nav-icon">A</span>
+          <span>Mark Attendance</span>
+        </button>
+        <button type="button" data-section="records" class="nav-item">
+          <span class="nav-icon">M</span>
+          <span>My Attendance</span>
+        </button>
+      </nav>
+      </div>
     </main>
 
-    <script src="/app.js?v=20260310-5"></script>
+    <script src="/app.js?v=20260310-16"></script>
   </body>
 </html>

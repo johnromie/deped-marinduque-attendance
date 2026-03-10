@@ -1,9 +1,18 @@
-﻿const authCard = document.getElementById('authCard');
+const authCard = document.getElementById('authCard');
 const appCard = document.getElementById('appCard');
+const attendanceCard = document.getElementById('attendanceCard');
 const myAttendanceCard = document.getElementById('myAttendanceCard');
+const employeeSidebar = document.getElementById('employeeSidebar');
+const employeeMain = document.getElementById('employeeMain');
+const userNav = document.getElementById('userNav');
 const authStatusEl = document.getElementById('authStatus');
 const userBadge = document.getElementById('userBadge');
 const adminLink = document.getElementById('adminLink');
+const sidebarNameEl = document.getElementById('sidebarName');
+const sidebarRoleEl = document.getElementById('sidebarRole');
+const sidebarIdEl = document.getElementById('sidebarId');
+const welcomeNameEl = document.getElementById('welcomeName');
+const attendanceNameEl = document.getElementById('attendanceName');
 
 const noteInput = document.getElementById('note');
 const dateFilterInput = document.getElementById('dateFilter');
@@ -26,11 +35,16 @@ const hoursTodayEl = document.getElementById('hoursToday');
 const daysThisMonthEl = document.getElementById('daysThisMonth');
 const totalLogsTodayEl = document.getElementById('totalLogsToday');
 const onTimeRateEl = document.getElementById('onTimeRate');
+const lateCountEl = document.getElementById('lateCount');
+const absentCountEl = document.getElementById('absentCount');
 const todayTimelineEl = document.getElementById('todayTimeline');
 const officeNameDisplayEl = document.getElementById('officeNameDisplay');
 const installCardEl = document.getElementById('installCard');
 const installBtnEl = document.getElementById('installBtn');
 const installNoteEl = document.getElementById('installNote');
+const markInBtn = document.getElementById('markInBtn');
+const markOutBtn = document.getElementById('markOutBtn');
+const topbarEl = document.querySelector('.app-topbar');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -42,7 +56,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260310-2';
+const APP_CACHE_NAME = 'app-shell-v20260310-16';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -124,6 +138,23 @@ function activateTab(tabName) {
   if (panel) panel.classList.remove('hidden');
 }
 
+function setUserSection(sectionId) {
+  const target = sectionId || 'dashboard';
+  document.querySelectorAll('.user-section').forEach((section) => {
+    section.classList.toggle('hidden', section.dataset.section !== target);
+  });
+  document.querySelectorAll('.mobile-nav .nav-item').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.section === target);
+  });
+  document.querySelectorAll('.sidebar-nav a').forEach((link) => {
+    const linkTarget = (link.getAttribute('href') || '').replace('#', '');
+    link.classList.toggle('active', linkTarget === target);
+  });
+  if (target) {
+    history.replaceState(null, '', `#${target}`);
+  }
+}
+
 function clearAttendanceState() {
   photoBlob = null;
   latestLocation = null;
@@ -188,6 +219,16 @@ function formatManilaTime(value) {
   }).format(new Date(value));
 }
 
+function formatManilaDateShort(dateKey) {
+  if (!dateKey) return '';
+  const date = new Date(`${dateKey}T00:00:00+08:00`);
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+}
+
 function escapeHtml(text) {
   return String(text || '')
     .replace(/&/g, '&amp;')
@@ -229,9 +270,11 @@ function stopLiveClock() {
 
 function resetDashboardSummary() {
   if (hoursTodayEl) hoursTodayEl.textContent = '0.0 hrs';
-  if (daysThisMonthEl) daysThisMonthEl.textContent = '0 day';
+  if (daysThisMonthEl) daysThisMonthEl.textContent = '0';
   if (totalLogsTodayEl) totalLogsTodayEl.textContent = '0';
   if (onTimeRateEl) onTimeRateEl.textContent = '0%';
+  if (lateCountEl) lateCountEl.textContent = '0';
+  if (absentCountEl) absentCountEl.textContent = '0';
   if (todayTimelineEl) todayTimelineEl.innerHTML = '<div class="timeline-item pending">No logs yet today.</div>';
 }
 
@@ -303,38 +346,31 @@ function updateDashboardSummary(todayRecords, allRecords) {
     year: 'numeric',
     month: '2-digit'
   }).format(new Date());
-  const monthlyRecords = allRecords.filter((r) => String(manilaDateKey(r.timestampIso)).slice(0, 7) === monthNow);
-
-  const uniqueDaysMap = new Map();
-  for (const rec of monthlyRecords) {
-    const key = manilaDateKey(rec.timestampIso);
-    if (!uniqueDaysMap.has(key)) uniqueDaysMap.set(key, []);
-    uniqueDaysMap.get(key).push(rec);
-  }
-
-  let onTimeDays = 0;
-  uniqueDaysMap.forEach((dayRecords) => {
-    const first = [...dayRecords].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso))[0];
-    if (!first) return;
-    const hm = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Asia/Manila',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date(first.timestampIso));
-    const [h, m] = hm.split(':').map(Number);
-    const mins = h * 60 + m;
-    if (mins <= 8 * 60 + 15) onTimeDays += 1;
-  });
-
-  const totalDays = uniqueDaysMap.size;
+  const monthlyRecords = Array.isArray(allRecords)
+    ? allRecords.filter((r) => String(manilaDateKey(r.timestampIso)).slice(0, 7) === monthNow)
+    : [];
+  const totalDays = new Set(monthlyRecords.map((r) => manilaDateKey(r.timestampIso))).size;
+  const onTimeDays = new Set(
+    monthlyRecords.filter((r) => r.attendanceStatus === 'ON_SITE').map((r) => manilaDateKey(r.timestampIso))
+  ).size;
+  const presentDays = new Set(
+    monthlyRecords.filter((r) => r.attendanceStatus === 'ON_SITE').map((r) => manilaDateKey(r.timestampIso))
+  ).size;
+  const lateDays = new Set(
+    monthlyRecords.filter((r) => r.attendanceStatus === 'NEEDS_REVIEW').map((r) => manilaDateKey(r.timestampIso))
+  ).size;
+  const absentDays = new Set(
+    monthlyRecords.filter((r) => r.attendanceStatus === 'OFF_SITE').map((r) => manilaDateKey(r.timestampIso))
+  ).size;
   const rate = totalDays ? Math.round((onTimeDays / totalDays) * 100) : 0;
   const hoursToday = computeHours(todayRecords);
 
   if (hoursTodayEl) hoursTodayEl.textContent = `${hoursToday.toFixed(1)} hrs`;
-  if (daysThisMonthEl) daysThisMonthEl.textContent = `${totalDays} ${totalDays === 1 ? 'day' : 'days'}`;
+  if (daysThisMonthEl) daysThisMonthEl.textContent = String(presentDays);
   if (totalLogsTodayEl) totalLogsTodayEl.textContent = String(todayRecords.length);
   if (onTimeRateEl) onTimeRateEl.textContent = `${rate}%`;
+  if (lateCountEl) lateCountEl.textContent = String(lateDays);
+  if (absentCountEl) absentCountEl.textContent = String(absentDays);
   renderTimeline(todayRecords);
 }
 
@@ -356,27 +392,49 @@ async function refreshDashboardFromRecords(currentRecords = []) {
 
 function renderAuthState() {
   const loggedIn = Boolean(currentUser && authToken);
+  document.body.classList.toggle('is-logged-in', loggedIn);
+  document.body.classList.toggle('is-logged-out', !loggedIn);
   authCard.classList.toggle('hidden', loggedIn);
+  if (topbarEl) topbarEl.classList.toggle('hidden', !loggedIn);
   appCard.classList.toggle('hidden', !loggedIn);
+  if (attendanceCard) attendanceCard.classList.toggle('hidden', !loggedIn);
   myAttendanceCard.classList.toggle('hidden', !loggedIn);
+  if (employeeSidebar) employeeSidebar.classList.toggle('hidden', !loggedIn);
+  if (employeeMain) employeeMain.classList.toggle('hidden', !loggedIn);
+  if (userNav) userNav.classList.toggle('hidden', !loggedIn);
 
   if (loggedIn) {
     setAuthStatus(`logged in as ${currentUser.username}`);
     userBadge.textContent = `${currentUser.fullName} (${currentUser.employeeId}) | Role: ${currentUser.role}`;
-    if (displayNameEl) displayNameEl.textContent = currentUser.fullName || currentUser.username || 'Attendance Dashboard';
+    const fullName = currentUser.fullName || currentUser.username || 'Attendance Dashboard';
+    if (displayNameEl) displayNameEl.textContent = fullName;
+    if (welcomeNameEl) {
+      const firstName = String(fullName).trim().split(/\s+/)[0] || fullName;
+      welcomeNameEl.textContent = firstName;
+    }
+    if (attendanceNameEl) attendanceNameEl.textContent = fullName;
+    if (sidebarNameEl) sidebarNameEl.textContent = fullName;
+    if (sidebarRoleEl) sidebarRoleEl.textContent = currentUser.role === 'admin' ? 'System Administrator' : 'Employee';
+    if (sidebarIdEl) sidebarIdEl.textContent = currentUser.employeeId || '';
     const isAdmin = currentUser.role === 'admin';
     adminLink.classList.toggle('hidden', !isAdmin);
     setOfficeBtn.classList.toggle('hidden', !isAdmin);
     startLiveClock();
+    setUserSection('dashboard');
   } else {
     setAuthStatus('not logged in');
     userBadge.textContent = '';
     if (displayNameEl) displayNameEl.textContent = 'Attendance Dashboard';
+    if (welcomeNameEl) welcomeNameEl.textContent = 'Employee';
+    if (sidebarNameEl) sidebarNameEl.textContent = 'Employee';
+    if (sidebarRoleEl) sidebarRoleEl.textContent = 'ICT Unit';
+    if (sidebarIdEl) sidebarIdEl.textContent = 'SDO-001';
     adminLink.classList.add('hidden');
     setOfficeBtn.classList.add('hidden');
     clearAttendanceState();
     stopLiveClock();
     resetDashboardSummary();
+    if (userNav) userNav.classList.add('hidden');
   }
 }
 
@@ -744,7 +802,7 @@ async function setOfficeReferenceFromCurrentGps() {
   }
 }
 
-async function submitAttendance() {
+async function submitAttendance(intent) {
   const note = noteInput.value.trim();
   if (!photoBlob) return alert('Capture a photo first.');
   if (!latestLocation) return alert('Get location first.');
@@ -763,6 +821,7 @@ async function submitAttendance() {
   form.append('latitude', String(latestLocation.latitude));
   form.append('longitude', String(latestLocation.longitude));
   form.append('gpsAccuracyMeters', String(latestLocation.gpsAccuracyMeters));
+  if (intent) form.append('attendanceIntent', String(intent));
   form.append('photo', photoBlob, `attendance-${Date.now()}.jpg`);
 
   setStatus('submitting...');
@@ -780,8 +839,59 @@ async function submitAttendance() {
   }
 }
 
-function statusTag(status) {
-  return `<span class="tag ${status}">${status}</span>`;
+function statusLabel(status) {
+  if (status === 'ON_SITE') return 'Present';
+  if (status === 'NEEDS_REVIEW') return 'Late';
+  if (status === 'OFF_SITE') return 'Absent';
+  return status || '-';
+}
+
+function statusTag(status, label) {
+  const cls = status || 'NEEDS_REVIEW';
+  const display = label || statusLabel(status);
+  return `<span class="tag ${cls}">${display}</span>`;
+}
+
+function groupRecordsForUser(records) {
+  const sorted = [...records].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso));
+  const map = new Map();
+
+  for (const record of sorted) {
+    const dateKey = record.localDate || manilaDateKey(record.timestampIso);
+    if (!map.has(dateKey)) {
+      map.set(dateKey, {
+        dateKey,
+        inTimes: [],
+        outTimes: [],
+        status: record.attendanceStatus || ''
+      });
+    }
+    const row = map.get(dateKey);
+    const type = record.attendanceType || '';
+    const stamp = new Date(record.timestampIso);
+
+    if (type.includes('IN')) row.inTimes.push(stamp);
+    if (type.includes('OUT')) row.outTimes.push(stamp);
+    if (record.attendanceStatus) row.status = record.attendanceStatus;
+  }
+
+  return Array.from(map.values())
+    .map((row) => {
+      const timeIn = row.inTimes.length
+        ? formatManilaTime(new Date(Math.min(...row.inTimes.map((t) => t.getTime()))))
+        : '';
+      const timeOut = row.outTimes.length
+        ? formatManilaTime(new Date(Math.max(...row.outTimes.map((t) => t.getTime()))))
+        : '';
+      return {
+        dateKey: row.dateKey,
+        dateLabel: formatManilaDateShort(row.dateKey) || row.dateKey,
+        timeIn,
+        timeOut,
+        status: row.status || ''
+      };
+    })
+    .sort((a, b) => b.dateKey.localeCompare(a.dateKey));
 }
 
 async function loadRecords() {
@@ -791,23 +901,22 @@ async function loadRecords() {
   try {
     const payload = await api(`/api/attendance${qs}`);
     const records = Array.isArray(payload.records) ? payload.records : [];
-    recordsBody.innerHTML = records
+    const grouped = groupRecordsForUser(records);
+    recordsBody.innerHTML = grouped
       .map((r) => {
-        const mapLink = `https://maps.google.com/?q=${r.latitude},${r.longitude}`;
+        const status = r.status || '';
         return `
           <tr>
-            <td>${new Date(r.timestampIso).toLocaleString()}</td>
-            <td>${r.attendanceTypeLabel || r.attendanceType || '-'}</td>
-            <td>${statusTag(r.attendanceStatus)}</td>
-            <td>${Math.round(r.distanceMeters)}</td>
-            <td>${Math.round(r.gpsAccuracyMeters)}</td>
-            <td><a href="${mapLink}" target="_blank" rel="noreferrer">View Map</a></td>
+            <td>${r.dateLabel || r.dateKey}</td>
+            <td>${r.timeIn || '-'}</td>
+            <td>${r.timeOut || '-'}</td>
+            <td>${statusTag(status, statusLabel(status))}</td>
           </tr>
         `;
       })
       .join('');
 
-    if (!records.length) recordsBody.innerHTML = '<tr><td colspan="6">No records found.</td></tr>';
+    if (!grouped.length) recordsBody.innerHTML = '<tr><td colspan="4">No records found.</td></tr>';
     await refreshDashboardFromRecords(records);
   } catch (err) {
     setStatus('load error');
@@ -840,9 +949,29 @@ document.getElementById('logoutBtn').addEventListener('click', logout);
 document.getElementById('startCameraBtn').addEventListener('click', startCamera);
 document.getElementById('captureBtn').addEventListener('click', capturePhoto);
 document.getElementById('locationBtn').addEventListener('click', getAccurateLocation);
-document.getElementById('submitBtn').addEventListener('click', submitAttendance);
+if (markInBtn) markInBtn.addEventListener('click', () => submitAttendance('in'));
+if (markOutBtn) markOutBtn.addEventListener('click', () => submitAttendance('out'));
+const submitBtn = document.getElementById('submitBtn');
+if (submitBtn) submitBtn.addEventListener('click', () => submitAttendance());
 document.getElementById('setOfficeBtn').addEventListener('click', setOfficeReferenceFromCurrentGps);
 document.getElementById('loadRecordsBtn').addEventListener('click', loadRecords);
+
+if (userNav) {
+  userNav.querySelectorAll('.nav-item').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.section || 'dashboard';
+      setUserSection(target);
+    });
+  });
+}
+document.querySelectorAll('.sidebar-nav a').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    const target = (link.getAttribute('href') || '').replace('#', '');
+    if (!target) return;
+    event.preventDefault();
+    setUserSection(target);
+  });
+});
 
 if (inAppBrowser) {
   browserHint.textContent = 'In-app browser detected. Camera/GPS are often blocked here. Open this link in Safari/Chrome.';
@@ -911,3 +1040,8 @@ hardClearLegacyCache()
     currentUser = null;
     renderAuthState();
   });
+
+
+
+
+

@@ -1,8 +1,31 @@
-﻿const statusEl = document.getElementById('status');
+const statusEl = document.getElementById('status');
 const infoEl = document.getElementById('info');
 const recordsBody = document.getElementById('recordsBody');
 const adminUserInfo = document.getElementById('adminUserInfo');
+const adminTotalEmployeesEl = document.getElementById('adminTotalEmployees');
+const adminPresentEl = document.getElementById('adminPresent');
+const adminLateEl = document.getElementById('adminLate');
+const adminAbsentEl = document.getElementById('adminAbsent');
+const adminCurrentTimeEl = document.getElementById('adminCurrentTime');
+const adminCurrentDateEl = document.getElementById('adminCurrentDate');
 const dateFilterInput = document.getElementById('dateFilter');
+const officeFilterInput = document.getElementById('officeFilter');
+const employeeSearchInput = document.getElementById('employeeSearch');
+const employeesBody = document.getElementById('employeesBody');
+const addEmployeeToggle = document.getElementById('addEmployeeToggle');
+const employeeFormCard = document.getElementById('employeeFormCard');
+const addFullNameInput = document.getElementById('addFullName');
+const addPositionInput = document.getElementById('addPosition');
+const addOfficeInput = document.getElementById('addOffice');
+const addEmployeeIdInput = document.getElementById('addEmployeeId');
+const addEmailInput = document.getElementById('addEmail');
+const addPasswordInput = document.getElementById('addPassword');
+const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+const cancelEmployeeBtn = document.getElementById('cancelEmployeeBtn');
+const reportOfficeSelect = document.getElementById('reportOffice');
+const generateReportBtn = document.getElementById('generateReportBtn');
+const downloadReportBtn = document.getElementById('downloadReportBtn');
+const reportStatusEl = document.getElementById('reportStatus');
 const monthFilterInput = document.getElementById('monthFilter');
 const employeeIdFilterInput = document.getElementById('employeeIdFilter');
 
@@ -10,6 +33,8 @@ let authToken = localStorage.getItem('attendance_token') || '';
 let lastLoadedRecords = [];
 let groupedLoadedRows = [];
 let adminUsers = [];
+let adminClockTimer = null;
+let lastReportMonth = '';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -19,10 +44,133 @@ function setInfo(text) {
   infoEl.textContent = text;
 }
 
+function toAdminDateParts(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).formatToParts(date);
+  const map = {};
+  for (const p of parts) {
+    if (p.type !== 'literal') map[p.type] = p.value;
+  }
+  return map;
+}
+
+function updateAdminClock() {
+  if (!adminCurrentTimeEl || !adminCurrentDateEl) return;
+  const p = toAdminDateParts(new Date());
+  adminCurrentTimeEl.textContent = `${p.hour}:${p.minute} ${p.dayPeriod}`;
+  adminCurrentDateEl.textContent = `${p.month} ${p.day}, ${p.year}`;
+}
+
+function startAdminClock() {
+  if (adminClockTimer) clearInterval(adminClockTimer);
+  updateAdminClock();
+  adminClockTimer = setInterval(updateAdminClock, 1000);
+}
+
+function stopAdminClock() {
+  if (adminClockTimer) {
+    clearInterval(adminClockTimer);
+    adminClockTimer = null;
+  }
+}
+
 function saveToken(token) {
   authToken = token || '';
   if (authToken) localStorage.setItem('attendance_token', authToken);
   else localStorage.removeItem('attendance_token');
+}
+
+function setReportStatus(text) {
+  if (reportStatusEl) reportStatusEl.textContent = `Report status: ${text}`;
+}
+
+function toggleSection(sectionId) {
+  document.querySelectorAll('.admin-section').forEach((section) => {
+    section.classList.toggle('hidden', section.id !== sectionId);
+  });
+  document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
+    link.classList.toggle('active', link.dataset.section === sectionId);
+  });
+}
+
+function renderEmployeesList() {
+  if (!employeesBody) return;
+  const query = String(employeeSearchInput?.value || '').trim().toLowerCase();
+  const rows = adminUsers.filter((u) => {
+    if (!query) return true;
+    const hay = `${u.employeeId} ${u.fullName} ${u.username} ${u.position || ''} ${u.office || ''}`.toLowerCase();
+    return hay.includes(query);
+  });
+
+  employeesBody.innerHTML = rows
+    .map((u) => {
+      const pos = u.position || '-';
+      const office = u.office || '-';
+      const email = u.email || '-';
+      return `
+        <tr>
+          <td>${u.employeeId || '-'}</td>
+          <td>${u.fullName || u.username}</td>
+          <td>${pos}</td>
+          <td>${office}</td>
+          <td>${email}</td>
+          <td><span class="tag ON_SITE">Active</span></td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (!rows.length) {
+    employeesBody.innerHTML = '<tr><td colspan="6">No employees found.</td></tr>';
+  }
+}
+
+function resetEmployeeForm() {
+  if (addFullNameInput) addFullNameInput.value = '';
+  if (addPositionInput) addPositionInput.value = '';
+  if (addOfficeInput) addOfficeInput.value = '';
+  if (addEmployeeIdInput) addEmployeeIdInput.value = '';
+  if (addEmailInput) addEmailInput.value = '';
+  if (addPasswordInput) addPasswordInput.value = '';
+}
+
+async function addEmployee() {
+  const body = {
+    fullName: addFullNameInput?.value.trim(),
+    position: addPositionInput?.value.trim(),
+    office: addOfficeInput?.value.trim(),
+    employeeId: addEmployeeIdInput?.value.trim(),
+    email: addEmailInput?.value.trim(),
+    password: addPasswordInput?.value
+  };
+
+  if (!body.fullName || !body.employeeId || !body.password) {
+    alert('Full Name, Employee ID, and Password are required.');
+    return;
+  }
+
+  try {
+    await api('/api/admin/users', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    setStatus('employee added');
+    await ensureAdmin();
+    renderEmployeesList();
+    resetEmployeeForm();
+    if (employeeFormCard) employeeFormCard.classList.add('hidden');
+  } catch (err) {
+    alert(err.message || 'Failed to add employee.');
+  }
 }
 
 async function api(path, options = {}) {
@@ -83,6 +231,7 @@ async function ensureAdmin() {
       return false;
     }
     adminUserInfo.textContent = `Logged in as ${me.user.fullName} (${me.user.username})`;
+    startAdminClock();
   } catch (err) {
     const msg = String(err && err.message ? err.message : '');
     const authFailed = /unauthorized|login again|admin access only|forbidden/i.test(msg);
@@ -99,6 +248,7 @@ async function ensureAdmin() {
   try {
     const usersPayload = await api('/api/admin/users');
     adminUsers = Array.isArray(usersPayload.users) ? usersPayload.users : [];
+    if (adminTotalEmployeesEl) adminTotalEmployeesEl.textContent = String(adminUsers.length);
     const list = adminUsers
       .map((u) => `${u.employeeId} - ${u.fullName} (${u.username})`)
       .sort((a, b) => a.localeCompare(b));
@@ -110,11 +260,14 @@ async function ensureAdmin() {
       document.body.appendChild(datalist);
     }
     datalist.innerHTML = list.map((item) => `<option value="${item}"></option>`).join('');
+    renderEmployeesList();
   } catch (err) {
     adminUsers = [];
     setStatus('user list warning');
     setInfo(err.message || 'Unable to load user list right now.');
   }
+
+  await loadSummary();
 
   return true;
 }
@@ -251,11 +404,19 @@ async function loadRecords() {
     const payload = await fetchAdminRecords(params);
     lastLoadedRecords = payload.records || [];
     groupedLoadedRows = groupRecordsForDisplay(lastLoadedRecords);
+    const officeFilter = String(officeFilterInput?.value || '').trim().toLowerCase();
+    if (officeFilter) {
+      groupedLoadedRows = groupedLoadedRows.filter((row) => {
+        const user = findUserByRecord(row);
+        return String(user.office || '').trim().toLowerCase() === officeFilter;
+      });
+    }
 
     recordsBody.innerHTML = groupedLoadedRows
       .map((row, idx) => {
         const hasMap = Number.isFinite(row.bestLat) && Number.isFinite(row.bestLng);
         const mapLink = hasMap ? `https://maps.google.com/?q=${row.bestLat},${row.bestLng}` : '';
+        const locationText = hasMap ? `${row.bestLat.toFixed(5)}, ${row.bestLng.toFixed(5)}` : '-';
         const photo = row.bestPhotoUrl ? `<a href="${row.bestPhotoUrl}" target="_blank" rel="noreferrer"><img class="thumb" src="${row.bestPhotoUrl}" alt="photo"/></a>` : '-';
         const userLabel = (row.fullName || row.username || row.employeeId || 'User').replace(/"/g, '&quot;');
         return `
@@ -268,6 +429,7 @@ async function loadRecords() {
             <td>${row.pmOut || '-'}</td>
             <td>${statusTag(row.status || '-')}</td>
             <td>${photo}</td>
+            <td>${locationText}</td>
             <td>${hasMap ? `<a href="${mapLink}" target="_blank" rel="noreferrer">View Map</a>` : '-'}</td>
             <td><button type="button" class="secondary row-print-dtr-btn" data-group-index="${idx}" title="Print DTR for ${userLabel}">Print ${userLabel}</button></td>
           </tr>
@@ -275,7 +437,7 @@ async function loadRecords() {
       })
       .join('');
 
-    if (!groupedLoadedRows.length) recordsBody.innerHTML = '<tr><td colspan="10">No records found.</td></tr>';
+    if (!groupedLoadedRows.length) recordsBody.innerHTML = '<tr><td colspan="11">No records found.</td></tr>';
 
     setStatus('records loaded');
     setInfo(`Total logs: ${payload.count} | Grouped daily records: ${groupedLoadedRows.length}`);
@@ -290,11 +452,45 @@ async function loadSummary() {
     setStatus('loading summary...');
     const s = await api('/api/summary/today');
     setStatus('summary loaded');
-    setInfo(`Date: ${s.date} | Total: ${s.total} | ON_SITE: ${s.onSite} | OFF_SITE: ${s.offSite} | NEEDS_REVIEW: ${s.needsReview}`);
+    if (adminTotalEmployeesEl) adminTotalEmployeesEl.textContent = String(s.totalEmployees ?? adminTotalEmployeesEl.textContent || '--');
+    if (adminPresentEl) adminPresentEl.textContent = String(s.present ?? s.onSite ?? '--');
+    if (adminLateEl) adminLateEl.textContent = String(s.late ?? s.needsReview ?? '--');
+    if (adminAbsentEl) adminAbsentEl.textContent = String(s.absent ?? s.offSite ?? '--');
+    setInfo(`Date: ${s.date} | Total: ${s.totalEmployees ?? s.total} | Present: ${s.present ?? s.onSite} | Late: ${s.late ?? s.needsReview} | Absent: ${s.absent ?? s.offSite}`);
   } catch (err) {
     setStatus('summary error');
     setInfo(err.message || 'Failed to load summary.');
   }
+}
+
+async function generateReport() {
+  const month = monthFilterInput?.value?.trim();
+  if (!month) {
+    alert('Select a month first.');
+    return;
+  }
+  try {
+    setReportStatus('generating...');
+    await api('/api/admin/archive-month', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ month })
+    });
+    lastReportMonth = month;
+    setReportStatus(`generated for ${month}`);
+  } catch (err) {
+    setReportStatus('error');
+    alert(err.message || 'Failed to generate report.');
+  }
+}
+
+async function downloadReport() {
+  if (!monthFilterInput?.value?.trim()) {
+    alert('Select a month first.');
+    return;
+  }
+  // Reuse existing DTR print flow (prints to PDF in browser).
+  await printDtrForm();
 }
 
 function toManilaDateParts(iso) {
@@ -585,12 +781,44 @@ async function printDtrForUser(selectedUser, month) {
 
 function logout() {
   saveToken('');
+  stopAdminClock();
   location.href = '/';
 }
 
 document.getElementById('loadBtn').addEventListener('click', loadRecords);
 document.getElementById('summaryBtn').addEventListener('click', loadSummary);
 document.getElementById('logoutBtn').addEventListener('click', logout);
+if (addEmployeeToggle) {
+  addEmployeeToggle.addEventListener('click', () => {
+    if (employeeFormCard) employeeFormCard.classList.toggle('hidden');
+  });
+}
+if (cancelEmployeeBtn) {
+  cancelEmployeeBtn.addEventListener('click', () => {
+    if (employeeFormCard) employeeFormCard.classList.add('hidden');
+    resetEmployeeForm();
+  });
+}
+if (addEmployeeBtn) {
+  addEmployeeBtn.addEventListener('click', addEmployee);
+}
+if (employeeSearchInput) {
+  employeeSearchInput.addEventListener('input', renderEmployeesList);
+}
+if (generateReportBtn) {
+  generateReportBtn.addEventListener('click', generateReport);
+}
+if (downloadReportBtn) {
+  downloadReportBtn.addEventListener('click', downloadReport);
+}
+document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    const sectionId = link.dataset.section || 'dashboard';
+    toggleSection(sectionId);
+    history.replaceState(null, '', `#${sectionId}`);
+  });
+});
 recordsBody.addEventListener('click', async (event) => {
   const btn = event.target.closest('.row-print-dtr-btn');
   if (!btn) return;
@@ -613,9 +841,35 @@ recordsBody.addEventListener('click', async (event) => {
   }
 });
 
-dateFilterInput.value = new Date().toISOString().slice(0, 10);
-monthFilterInput.value = new Date().toISOString().slice(0, 7);
+function manilaDateKey() {
+  const p = toAdminDateParts(new Date());
+  const day = String(p.day).padStart(2, '0');
+  const monthIndex = new Date(`${p.month} 1, ${p.year}`).getMonth() + 1;
+  const month = String(monthIndex).padStart(2, '0');
+  return `${p.year}-${month}-${day}`;
+}
+
+function manilaMonthKey() {
+  const p = toAdminDateParts(new Date());
+  const monthIndex = new Date(`${p.month} 1, ${p.year}`).getMonth() + 1;
+  const month = String(monthIndex).padStart(2, '0');
+  return `${p.year}-${month}`;
+}
+
+dateFilterInput.value = manilaDateKey();
+monthFilterInput.value = manilaMonthKey();
+
+startAdminClock();
 
 ensureAdmin().then((ok) => {
   if (ok) loadRecords();
 });
+
+const initialSection = window.location.hash.replace('#', '') || 'dashboard';
+toggleSection(initialSection);
+
+
+
+
+
+
