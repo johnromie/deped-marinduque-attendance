@@ -1201,3 +1201,86 @@ th {
     flex-wrap: wrap;
   }
 }
+
+/* --- SDO theme fixes for tabs/layout (2026-03-10) --- */
+.sdo-theme .app-shell {
+  grid-template-columns: 1fr;
+}
+
+.sdo-theme .tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+}
+
+.sdo-theme .tab {
+  padding: 8px 6px;
+  font-size: 12px;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+}
+
+@media (max-width: 980px) {
+  .sdo-theme .tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .sdo-theme .tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sdo-theme .app-topbar {
+  flex-wrap: wrap;
+}
+
+.sdo-theme .topbar-actions {
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+/* --- SDO responsive layout fixes (2026-03-10) --- */
+.sdo-theme .app-shell {
+  display: block;
+  width: min(1240px, 100%);
+  margin: 18px auto 28px;
+  padding: 0 14px 24px;
+}
+
+.sdo-theme .auth-card {
+  max-width: 440px;
+  margin: 24px auto;
+}
+
+.sdo-theme .dashboard-card,
+.sdo-theme .history-card {
+  max-width: 1240px;
+  margin: 0 auto 18px;
+}
+
+.sdo-theme .history-head,
+.sdo-theme .history-actions {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sdo-theme .dashboard-grid {
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+@media (max-width: 1100px) {
+  .sdo-theme .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .sdo-theme .auth-card,
+  .sdo-theme .dashboard-card,
+  .sdo-theme .history-card {
+    margin: 14px auto;
+  }
+}
