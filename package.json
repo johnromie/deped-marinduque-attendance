@@ -24,6 +24,8 @@
     "public:stop": "scripts\\stop-public.cmd",
     "public:url": "scripts\\get-public-url.cmd",
     "public:autostart": "scripts\\install-autostart.cmd",
+    "autopush:install": "scripts\\install-auto-push.cmd",
+    "autopush:run": "scripts\\auto-push.cmd",
     "dns:fix": "scripts\\fix-dns.cmd",
     "public:setup:stable": "scripts\\setup-stable-link.cmd",
     "public:setup:render": "scripts\\setup-render-url.cmd"
