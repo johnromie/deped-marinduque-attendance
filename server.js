@@ -1359,8 +1359,8 @@ app.post('/api/auth/forgot-password', (req, res) => {
   }
 
   const users = readJsonArray(usersFile);
-  const user = findUserByLoginIdentifier(users, username);
-  const index = user ? users.findIndex((u) => u.id === user.id) : -1;
+  const foundUser = findUserByLoginIdentifier(users, username);
+  const index = foundUser ? users.findIndex((u) => u.id === foundUser.id) : -1;
   if (index < 0) {
     return res.status(404).json({ message: 'Username or Employee ID not found.' });
   }
