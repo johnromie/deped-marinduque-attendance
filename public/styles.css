@@ -1107,3 +1107,97 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- SDO classic dashboard polish (2026-03-10) --- */
+.sdo-theme .card {
+  border-radius: 12px;
+  border: 1px solid #cfd7e6;
+  box-shadow: 0 10px 24px rgba(12, 24, 45, 0.18);
+}
+
+.sdo-theme label {
+  font-weight: 700;
+  color: #2a3a52;
+}
+
+.sdo-theme input,
+.sdo-theme select {
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #c8d2e4;
+}
+
+.sdo-theme .tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: #e7edf7;
+  padding: 6px;
+  border-radius: 10px;
+}
+
+.sdo-theme .tab {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #243a58;
+}
+
+.sdo-theme .tab.active {
+  background: #1f4b8d;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.sdo-theme button {
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2b5ca8 0%, #173d76 100%);
+}
+
+.sdo-theme button.secondary {
+  background: linear-gradient(180deg, #3c8d4d 0%, #2a6a39 100%);
+}
+
+.sdo-theme .topbar-nav {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sdo-theme .topbar-nav a {
+  color: #dfe7f7;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sdo-theme .topbar-nav a:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.sdo-theme .anchor {
+  position: relative;
+  top: -90px;
+  height: 1px;
+}
+
+.sdo-theme .table-wrap table {
+  font-size: 13px;
+}
+
+.sdo-theme .table-wrap th {
+  background: #e9eef7;
+  color: #1f2f49;
+}
+
+.sdo-theme .table-wrap td {
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .sdo-theme .topbar-nav {
+    flex-wrap: wrap;
+  }
+}

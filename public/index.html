@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260310-3" />
+    <link rel="stylesheet" href="/styles.css?v=20260310-4" />
   </head>
   <body class="attendance-app sdo-theme">
     <header class="app-topbar">
@@ -26,6 +26,12 @@
         <span class="topbar-pill" id="liveDate">Loading date...</span>
         <span class="topbar-pill" id="liveTime">--:--:--</span>
       </div>
+      <nav class="topbar-nav">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#attendance">Attendance</a>
+        <a href="#history">Logs</a>
+        <a href="#reports">Reports</a>
+      </nav>
     </header>
 
     <main class="app-shell">
@@ -106,6 +112,7 @@
       </section>
 
       <section class="card dashboard-card hidden" id="appCard">
+        <div id="dashboard" class="anchor"></div>
         <div class="dashboard-header">
           <div class="profile-card">
             <img src="/icons/sdo-marinduque.jpg" alt="Profile" class="profile-photo" />
@@ -152,7 +159,7 @@
           </div>
         </section>
 
-        <section class="dashboard-grid">
+        <section class="dashboard-grid" id="attendance">
           <article class="panel">
             <h3>Capture Attendance</h3>
             <label>Note (optional)
@@ -194,7 +201,7 @@
           </article>
         </section>
 
-        <section class="support-strip">
+        <section class="support-strip" id="reports">
           <div>
             <h3>Need Help?</h3>
             <p class="muted">Contact the ICT support desk for device or login assistance.</p>
@@ -207,6 +214,7 @@
       </section>
 
       <section class="card history-card hidden" id="myAttendanceCard">
+        <div id="history" class="anchor"></div>
         <div class="history-head">
           <div>
             <h2>My Attendance History</h2>
@@ -237,6 +245,6 @@
       </section>
     </main>
 
-    <script src="/app.js?v=20260310-3"></script>
+    <script src="/app.js?v=20260310-4"></script>
   </body>
 </html>

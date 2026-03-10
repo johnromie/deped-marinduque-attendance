@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2f57" />
     <title>Quick Admin - DepEd Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260310-3" />
+    <link rel="stylesheet" href="/styles.css?v=20260310-4" />
   </head>
   <body class="attendance-app sdo-theme admin-app">
     <header class="app-topbar">
@@ -19,6 +19,11 @@
       <div class="topbar-actions">
         <span class="topbar-pill">Admin Console</span>
       </div>
+      <nav class="topbar-nav">
+        <a href="#records">Attendance</a>
+        <a href="#filters">Filters</a>
+        <a href="#reports">Reports</a>
+      </nav>
     </header>
 
     <main class="app-shell">
@@ -53,7 +58,7 @@
           </article>
         </section>
 
-        <section class="admin-filters">
+        <section class="admin-filters" id="filters">
           <label>Date
             <input id="dateFilter" type="date" />
           </label>
@@ -73,7 +78,7 @@
         <div class="status" id="status">Status: waiting</div>
         <div class="info" id="info"></div>
 
-        <div class="table-wrap">
+        <div class="table-wrap" id="records">
           <table>
             <thead>
               <tr>
@@ -95,6 +100,6 @@
       </section>
     </main>
 
-    <script src="/admin.js?v=20260310-1"></script>
+    <script src="/admin.js?v=20260310-4"></script>
   </body>
 </html>

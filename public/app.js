@@ -41,7 +41,7 @@ let cameraStream = null;
 let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
-const STRICT_CLIENT_GPS_METERS = 25;
+const STRICT_CLIENT_GPS_METERS = 20;
 const APP_CACHE_NAME = 'app-shell-v20260310-2';
 
 function setStatus(text) {
@@ -629,7 +629,7 @@ function pickBestLocation(samples) {
   return { latitude: sumLat / sumWeight, longitude: sumLng / sumWeight, gpsAccuracyMeters: top[0].accuracy };
 }
 
-function collectAccurateLocation(targetAccuracyMeters = 25, minSamples = 4, maxWaitMs = 35000) {
+function collectAccurateLocation(targetAccuracyMeters = 20, minSamples = 5, maxWaitMs = 45000) {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) return reject(new Error('Geolocation is not supported by this browser.'));
     if (inAppBrowser) return reject(new Error('Open in Safari/Chrome for accurate GPS.'));
@@ -691,7 +691,7 @@ async function getAccurateLocation() {
   try {
     setStatus('collecting GPS samples...');
     const cfg = officeConfig || (await fetchConfig());
-    const strictTarget = cfg ? Math.min(Math.max(cfg.maxGpsAccuracyMeters, 15), 35) : 25;
+    const strictTarget = cfg ? Math.min(Math.max(cfg.maxGpsAccuracyMeters, 10), 25) : 20;
     const coords = await collectAccurateLocation(strictTarget, 4, 35000);
 
     latestLocation = { latitude: coords.latitude, longitude: coords.longitude, gpsAccuracyMeters: coords.gpsAccuracyMeters };
