@@ -852,3 +852,39 @@ th {
     grid-template-columns: 1fr;
   }
 }
+
+.attendance-app .install-card {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #e9f2ff 0%, #effaf5 100%);
+  border: 1px solid #d7e5f6;
+}
+
+.attendance-app .install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.attendance-app .download-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  background: #ffffff;
+  border: 1px solid #cfdff5;
+  color: #1f4f94;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .attendance-app .install-actions {
+    flex-direction: column;
+  }
+}

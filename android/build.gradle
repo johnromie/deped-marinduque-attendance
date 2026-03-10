@@ -24,6 +24,14 @@ allprojects {
     }
 }
 
+subprojects { project ->
+    afterEvaluate {
+        if (project.plugins.hasPlugin('com.android.application') || project.plugins.hasPlugin('com.android.library')) {
+            project.android.buildToolsVersion = "36.1.0"
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

@@ -16,3 +16,7 @@ dist/
 build/
 .DS_Store
 Thumbs.db
+android/keystore.properties
+android/app/release.keystore
+android/app/debug.keystore
+apk/
