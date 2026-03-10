@@ -719,3 +719,136 @@ th {
     transition: none !important;
   }
 }
+
+/* --- Extra dashboard design blocks (2026-03-10) --- */
+.attendance-app .insight-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.attendance-app .insight-card {
+  border-radius: 18px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #d8e5f6;
+  box-shadow: 0 10px 20px rgba(12, 37, 78, 0.08);
+  display: grid;
+  gap: 8px;
+}
+
+.attendance-app .insight-head {
+  font-weight: 800;
+  color: #1b3f74;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.attendance-app .insight-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.attendance-app .chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attendance-app .chip {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #e7f3ff;
+  color: #1b4f94;
+}
+
+.attendance-app .chip-light {
+  background: #edf7f2;
+  color: #206c54;
+}
+
+.attendance-app .mini-chart {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  gap: 6px;
+  height: 90px;
+  padding: 8px 0 4px;
+}
+
+.attendance-app .mini-bar {
+  display: block;
+  height: var(--h);
+  min-height: 10px;
+  border-radius: 10px 10px 4px 4px;
+  background: linear-gradient(180deg, #2a6bc6 0%, #1b4f94 100%);
+  opacity: 0.9;
+}
+
+.attendance-app .tips {
+  margin: 0;
+  padding-left: 18px;
+  color: #4b637e;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.attendance-app .note-list {
+  display: grid;
+  gap: 8px;
+}
+
+.attendance-app .note {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f6f9ff;
+  border: 1px solid #dbe7f8;
+  font-size: 14px;
+  color: #536a84;
+}
+
+.attendance-app .support-strip {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #f0f6ff 0%, #f7fffb 100%);
+  border: 1px solid #d7e5f6;
+}
+
+.attendance-app .support-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.attendance-app .support-tile {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #d6e1f3;
+  font-weight: 700;
+  color: #1d4b86;
+}
+
+@media (max-width: 1200px) {
+  .attendance-app .insight-grid,
+  .attendance-app .support-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .attendance-app .insight-grid,
+  .attendance-app .support-strip {
+    grid-template-columns: 1fr;
+  }
+}

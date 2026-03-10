@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0056b3" />
+    <meta name="theme-color" content="#1c4e9a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="DepEd Attendance" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" type="image/svg+xml" href="/icons/app-icon.svg" />
-    <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
+    <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
+    <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260309-20" />
+    <link rel="stylesheet" href="/styles.css?v=20260310-2" />
   </head>
   <body class="attendance-app">
     <main class="app-shell">
@@ -140,6 +140,54 @@
             </article>
           </section>
 
+          <section class="install-card hidden" id="installCard">
+            <div>
+              <h3>Install the App</h3>
+              <p class="muted">Add DepEd Marinduque Attendance to your phone for a full-screen app experience.</p>
+              <p class="install-note" id="installNote">If you do not see the install prompt, use your browser menu and select "Add to Home Screen".</p>
+            </div>
+            <button id="installBtn" type="button">Install Now</button>
+          </section>
+
+          <section class="insight-grid">
+            <article class="insight-card">
+              <div class="insight-head">Office Location</div>
+              <p id="officeNameDisplay" class="insight-title">DepEd Marinduque Division Office</p>
+              <div class="chip-row">
+                <span class="chip">GPS Verified</span>
+                <span class="chip chip-light">Radius Tracking</span>
+              </div>
+              <p class="muted">Distance updates after you tap Get Accurate Location.</p>
+            </article>
+            <article class="insight-card">
+              <div class="insight-head">Weekly Activity</div>
+              <div class="mini-chart">
+                <span class="mini-bar" style="--h:42%"></span>
+                <span class="mini-bar" style="--h:64%"></span>
+                <span class="mini-bar" style="--h:82%"></span>
+                <span class="mini-bar" style="--h:56%"></span>
+                <span class="mini-bar" style="--h:70%"></span>
+                <span class="mini-bar" style="--h:38%"></span>
+                <span class="mini-bar" style="--h:22%"></span>
+              </div>
+              <p class="muted">Pattern updates as you log attendance during the week.</p>
+            </article>
+            <article class="insight-card">
+              <div class="insight-head">Attendance Tips</div>
+              <ul class="tips">
+                <li>Use daylight for clearer attendance photos.</li>
+                <li>Turn on GPS before tapping Get Accurate Location.</li>
+                <li>Stay within the approved office radius.</li>
+              </ul>
+            </article>
+            <article class="insight-card">
+              <div class="insight-head">Recent Notes</div>
+              <div class="note-list">
+                <div class="note">No notes yet. Your latest remarks will show here.</div>
+              </div>
+            </article>
+          </section>
+
           <section class="feature-grid">
             <article class="panel">
               <h3>Capture Attendance</h3>
@@ -178,6 +226,17 @@
               <div class="info" id="info"></div>
             </article>
           </section>
+
+          <section class="support-strip">
+            <div>
+              <h3>Need Help?</h3>
+              <p class="muted">Contact the ICT support desk for device or login assistance.</p>
+            </div>
+            <div class="support-actions">
+              <div class="support-tile">ICT Support: 09XX-XXX-XXXX</div>
+              <div class="support-tile">Email: support@deped-marinduque.ph</div>
+            </div>
+          </section>
         </section>
 
         <section class="card history-card hidden" id="myAttendanceCard">
@@ -212,6 +271,6 @@
       </section>
     </main>
 
-    <script src="/app.js?v=20260309-20"></script>
+    <script src="/app.js?v=20260310-2"></script>
   </body>
 </html>

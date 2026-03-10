@@ -27,6 +27,10 @@ const daysThisMonthEl = document.getElementById('daysThisMonth');
 const totalLogsTodayEl = document.getElementById('totalLogsToday');
 const onTimeRateEl = document.getElementById('onTimeRate');
 const todayTimelineEl = document.getElementById('todayTimeline');
+const officeNameDisplayEl = document.getElementById('officeNameDisplay');
+const installCardEl = document.getElementById('installCard');
+const installBtnEl = document.getElementById('installBtn');
+const installNoteEl = document.getElementById('installNote');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -35,8 +39,10 @@ let latestLocation = null;
 let officeConfig = null;
 let cameraStream = null;
 let clockTimer = null;
+let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 25;
+const APP_CACHE_NAME = 'app-shell-v20260310-2';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -100,11 +106,11 @@ async function hardClearLegacyCache() {
   try {
     if ('serviceWorker' in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map((r) => r.unregister()));
+      await Promise.all(regs.map((r) => r.update()));
     }
     if (window.caches && caches.keys) {
       const keys = await caches.keys();
-      await Promise.all(keys.map((k) => caches.delete(k)));
+      await Promise.all(keys.filter((k) => k !== APP_CACHE_NAME).map((k) => caches.delete(k)));
     }
   } catch {
     // ignore cache clear errors
@@ -227,6 +233,37 @@ function resetDashboardSummary() {
   if (totalLogsTodayEl) totalLogsTodayEl.textContent = '0';
   if (onTimeRateEl) onTimeRateEl.textContent = '0%';
   if (todayTimelineEl) todayTimelineEl.innerHTML = '<div class="timeline-item pending">No logs yet today.</div>';
+}
+
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function showInstallCard() {
+  if (!installCardEl) return;
+  installCardEl.classList.remove('hidden');
+  if (installBtnEl) installBtnEl.disabled = !deferredInstallPrompt;
+  if (installNoteEl) {
+    if (isIos()) {
+      installNoteEl.textContent = 'On iPhone, tap Share then \"Add to Home Screen\" to install.';
+    } else {
+      installNoteEl.textContent = 'If you do not see the install prompt, use your browser menu and select \"Install app\".';
+    }
+  }
+}
+
+function hideInstallCard() {
+  if (!installCardEl) return;
+  installCardEl.classList.add('hidden');
+}
+
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    await navigator.serviceWorker.register('/sw.js');
+  } catch {
+    // ignore registration errors
+  }
 }
 
 function computeHours(records) {
@@ -354,6 +391,9 @@ async function fetchConfig() {
   try {
     const payload = await api('/api/config');
     officeConfig = payload;
+    if (officeNameDisplayEl && payload?.officeName) {
+      officeNameDisplayEl.textContent = payload.officeName;
+    }
     return payload;
   } catch {
     return null;
@@ -833,7 +873,35 @@ dateFilterInput.value = manilaDateKey(new Date());
 activateTab('login');
 renderAuthState();
 
+if (installBtnEl) {
+  installBtnEl.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    if (choice?.outcome === 'accepted') {
+      hideInstallCard();
+      deferredInstallPrompt = null;
+    }
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  showInstallCard();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallCard();
+});
+
+if (isIos()) {
+  showInstallCard();
+}
+
 hardClearLegacyCache()
+  .then(() => registerServiceWorker())
   .then(() => fetchBuildInfo())
   .then(() => fetchMe())
   .then(() => fetchConfig())
