@@ -888,3 +888,222 @@ th {
     flex-direction: column;
   }
 }
+
+/* --- SDO dashboard theme overrides (2026-03-10) --- */
+.attendance-app.sdo-theme {
+  background: linear-gradient(160deg, #e9eff8 0%, #f6f8fc 60%, #edf2fb 100%);
+}
+
+.attendance-app.sdo-theme .app-shell {
+  width: min(1320px, 100%);
+  margin: 20px auto 28px;
+  padding: 0 14px 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #1a2f52 0%, #0f2442 100%);
+  color: #f2f6ff;
+  box-shadow: 0 12px 26px rgba(8, 21, 40, 0.35);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  object-fit: cover;
+}
+
+.topbar-title {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 15px;
+}
+
+.topbar-subtitle {
+  font-size: 12px;
+  color: #c8d7f3;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.topbar-pill {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.profile-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #f6f8fc;
+  border: 1px solid #d6e0f2;
+  border-radius: 16px;
+  padding: 12px 14px;
+  min-width: 260px;
+}
+
+.profile-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid #cdd9ee;
+  background: #fff;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #172d4f;
+}
+
+.profile-meta {
+  font-size: 13px;
+  color: #536a84;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.header-actions a {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #eef3fb;
+  border: 1px solid #cfdcf1;
+  color: #1c4e9a;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.stat-card {
+  border-radius: 14px;
+  padding: 14px;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(12, 22, 48, 0.2);
+}
+
+.stat-card h3 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+.stat-navy { background: linear-gradient(180deg, #2c476f 0%, #1a2d4e 100%); }
+.stat-green { background: linear-gradient(180deg, #3b8e4a 0%, #2a6c39 100%); }
+.stat-red { background: linear-gradient(180deg, #c94a3b 0%, #a03529 100%); }
+.stat-orange { background: linear-gradient(180deg, #d9792f 0%, #b85d1f 100%); }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.location-panel {
+  background: #f6f8fc;
+  border: 1px solid #d6e0f2;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.location-title {
+  font-weight: 800;
+  color: #1c3f70;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1100px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .topbar-actions {
+    flex-wrap: wrap;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+.admin-app .admin-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-app .admin-filters {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 8px;
+}
+
+.admin-app .admin-stat h3 {
+  font-size: 20px;
+}
+
+@media (max-width: 1100px) {
+  .admin-app .admin-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-app .admin-filters {
+    grid-template-columns: 1fr;
+  }
+}
