@@ -388,7 +388,8 @@ th {
 }
 
 .login-box,
-.forgot-box {
+.forgot-box,
+.register-box {
   background: #ffffff;
   border: 1px solid #d6e1f4;
   border-radius: 16px;
@@ -411,16 +412,28 @@ th {
   margin-top: 10px;
 }
 
+.register-box {
+  margin-top: 10px;
+}
+
 .link-btn {
   background: transparent;
   color: #1f4b8d;
   font-weight: 800;
   box-shadow: none;
+  padding: 6px 8px;
 }
 
 .link-btn:hover {
   text-decoration: underline;
   transform: none;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .auth-footer {

@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260311-08" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-09" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -49,7 +49,10 @@
             <input id="loginPassword" type="password" autocomplete="current-password" />
           </label>
           <button id="loginBtn" type="button">Login</button>
-          <button id="forgotToggle" type="button" class="link-btn">Forgot Password?</button>
+          <div class="auth-links">
+            <button id="registerToggle" type="button" class="link-btn">Register</button>
+            <button id="forgotToggle" type="button" class="link-btn">Forgot Password?</button>
+          </div>
         </div>
 
         <div class="forgot-box hidden" id="forgotPanel">
@@ -63,6 +66,28 @@
             <input id="forgotNewPassword" type="password" autocomplete="new-password" />
           </label>
           <button id="forgotBtn" type="button">Reset Password</button>
+        </div>
+
+        <div class="register-box hidden" id="registerPanel">
+          <label>Employee ID
+            <input id="regEmployeeId" type="text" placeholder="e.g. SDO-001" />
+          </label>
+          <label>Full Name
+            <input id="regFullName" type="text" placeholder="Juan Dela Cruz" />
+          </label>
+          <label>Username
+            <input id="regUsername" type="text" placeholder="e.g. juan.delacruz" />
+          </label>
+          <label>Password
+            <input id="regPassword" type="password" autocomplete="new-password" />
+          </label>
+          <label>Security Question
+            <input id="regQuestion" type="text" placeholder="Your favorite color?" />
+          </label>
+          <label>Security Answer
+            <input id="regAnswer" type="text" />
+          </label>
+          <button id="registerBtn" type="button">Create Account</button>
         </div>
 
         <div class="auth-footer">SDO MARINDUQUE</div>
@@ -300,6 +325,6 @@
       </div>
     </main>
 
-    <script src="/app.js?v=20260311-08"></script>
+    <script src="/app.js?v=20260311-09"></script>
   </body>
 </html>

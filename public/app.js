@@ -50,6 +50,8 @@ const userMenu = document.getElementById('userMenu');
 const logoutBtnTop = document.getElementById('logoutBtnTop');
 const forgotToggle = document.getElementById('forgotToggle');
 const forgotPanel = document.getElementById('forgotPanel');
+const registerToggle = document.getElementById('registerToggle');
+const registerPanel = document.getElementById('registerPanel');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -61,7 +63,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-08';
+const APP_CACHE_NAME = 'app-shell-v20260311-09';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -999,6 +1001,14 @@ if (userMenuBtn && userMenu) {
 if (forgotToggle && forgotPanel) {
   forgotToggle.addEventListener('click', () => {
     forgotPanel.classList.toggle('hidden');
+    if (registerPanel) registerPanel.classList.add('hidden');
+  });
+}
+
+if (registerToggle && registerPanel) {
+  registerToggle.addEventListener('click', () => {
+    registerPanel.classList.toggle('hidden');
+    if (forgotPanel) forgotPanel.classList.add('hidden');
   });
 }
 
