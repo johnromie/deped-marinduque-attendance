@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260310-16" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-02" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -320,21 +320,34 @@
 
       <nav class="mobile-nav hidden" id="userNav">
         <button type="button" data-section="dashboard" class="nav-item active">
-          <span class="nav-icon">D</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-9.5z" />
+            </svg>
+          </span>
           <span>Dashboard</span>
         </button>
         <button type="button" data-section="attendance" class="nav-item">
-          <span class="nav-icon">A</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path d="M6 4h12a2 2 0 0 1 2 2v3H4V6a2 2 0 0 1 2-2zm-2 7h16v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7zm5 2h2v2H9v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z" />
+            </svg>
+          </span>
           <span>Mark Attendance</span>
         </button>
         <button type="button" data-section="records" class="nav-item">
-          <span class="nav-icon">M</span>
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm6 1v5h5" />
+              <path d="M9 12h6v2H9zm0 4h6v2H9z" />
+            </svg>
+          </span>
           <span>My Attendance</span>
         </button>
       </nav>
       </div>
     </main>
 
-    <script src="/app.js?v=20260310-16"></script>
+    <script src="/app.js?v=20260311-02"></script>
   </body>
 </html>

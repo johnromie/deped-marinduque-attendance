@@ -1041,6 +1041,10 @@ th {
   font-size: 22px;
 }
 
+.stat-grid-3 .stat-card {
+  min-height: 74px;
+}
+
 .stat-navy { background: linear-gradient(180deg, #2c476f 0%, #1a2d4e 100%); }
 .stat-green { background: linear-gradient(180deg, #3b8e4a 0%, #2a6c39 100%); }
 .stat-red { background: linear-gradient(180deg, #c94a3b 0%, #a03529 100%); }
@@ -1814,13 +1818,13 @@ th {
   position: sticky;
   bottom: 0;
   margin-top: 18px;
-  background: #f2f6ff;
+  background: #e9f0fb;
   border: 1px solid #d7e2f3;
-  border-radius: 16px;
-  padding: 8px;
+  border-radius: 18px;
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   box-shadow: 0 10px 24px rgba(12, 24, 45, 0.15);
 }
 
@@ -1834,12 +1838,13 @@ th {
   background: #ffffff;
   color: #2a4365;
   border: 1px solid #d7e2f3;
-  border-radius: 12px;
+  border-radius: 16px;
   display: grid;
   gap: 4px;
   justify-items: center;
-  padding: 8px 6px;
-  font-size: 11px;
+  padding: 10px 8px;
+  min-height: 62px;
+  font-size: 12px;
   font-weight: 800;
   box-shadow: none;
 }
@@ -1848,21 +1853,30 @@ th {
   background: linear-gradient(180deg, #2b66be 0%, #19488f 100%);
   color: #fff;
   border-color: transparent;
+  box-shadow: 0 10px 18px rgba(22, 72, 143, 0.22);
 }
 
 .mobile-nav .nav-icon {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(25, 72, 143, 0.12);
   display: grid;
   place-items: center;
-  font-size: 12px;
-  font-weight: 800;
+}
+
+.mobile-nav .nav-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: #1b3f74;
 }
 
 .mobile-nav .nav-item.active .nav-icon {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-nav .nav-item.active .nav-icon svg {
+  fill: #ffffff;
 }
 
 @media (max-width: 1100px) {
@@ -1908,6 +1922,19 @@ th {
 @media (max-width: 600px) {
   .quick-stats {
     grid-template-columns: 1fr;
+  }
+
+  .stat-grid-3 {
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .stat-card h3 {
+    font-size: 20px;
   }
 
   .attendance-card .compact-actions {

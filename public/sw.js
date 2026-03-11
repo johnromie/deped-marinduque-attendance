@@ -1,11 +1,11 @@
-const CACHE_NAME = 'app-shell-v20260310-16';
+const CACHE_NAME = 'app-shell-v20260311-02';
 const ASSETS = [
   '/',
   '/index.html',
   '/admin.html',
-  '/styles.css?v=20260310-16',
-  '/app.js?v=20260310-16',
-  '/admin.js?v=20260310-16',
+  '/styles.css?v=20260311-02',
+  '/app.js?v=20260311-02',
+  '/admin.js?v=20260311-02',
   '/manifest.webmanifest',
   '/icons/sdo-marinduque-192.png',
   '/icons/sdo-marinduque-512.png',
