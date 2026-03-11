@@ -354,6 +354,28 @@ th {
 .attendance-app .auth-card {
   background: linear-gradient(160deg, #eaf1ff 0%, #f7fbff 55%, #eef6ff 100%);
   border: 1px solid #d6e1f4;
+  position: relative;
+  overflow: hidden;
+}
+
+.attendance-app .auth-card::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20% auto auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(69, 126, 207, 0.18) 0%, rgba(69, 126, 207, 0) 70%);
+}
+
+.attendance-app .auth-card::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -35% -25%;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(107, 198, 175, 0.16) 0%, rgba(107, 198, 175, 0) 70%);
 }
 
 .auth-brand {
@@ -362,6 +384,8 @@ th {
   text-align: center;
   gap: 6px;
   margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-logo-lg {
@@ -397,6 +421,8 @@ th {
   display: grid;
   gap: 8px;
   box-shadow: 0 12px 24px rgba(16, 34, 64, 0.08);
+  position: relative;
+  z-index: 1;
 }
 
 .login-box button {
@@ -458,6 +484,8 @@ th {
   color: #58708f;
   font-weight: 800;
   letter-spacing: 0.12em;
+  position: relative;
+  z-index: 1;
 }
 
 .attendance-app .top-hero {
@@ -1108,6 +1136,18 @@ th {
   flex-wrap: wrap;
 }
 
+.dashboard-card {
+  background: linear-gradient(160deg, #f7fbff 0%, #f0f6ff 60%, #f8fbff 100%);
+}
+
+.attendance-card {
+  background: linear-gradient(160deg, #ffffff 0%, #f3f7ff 65%, #ffffff 100%);
+}
+
+.history-card {
+  background: linear-gradient(160deg, #ffffff 0%, #f6f9ff 60%, #ffffff 100%);
+}
+
 .profile-card {
   display: flex;
   gap: 14px;
@@ -1576,6 +1616,7 @@ th {
   grid-column: 2 / 3;
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 
 .welcome-panel {
@@ -1656,6 +1697,10 @@ th {
     linear-gradient(120deg, rgba(203, 224, 250, 0.65), rgba(226, 244, 232, 0.7)),
     repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0 12px, rgba(255, 255, 255, 0) 12px 24px);
   overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: #2a4770;
+  font-weight: 700;
 }
 
 .map-placeholder::after {
@@ -1690,6 +1735,34 @@ th {
   background: #d84f4f;
   border-radius: 50%;
   transform: translateX(-50%);
+}
+
+.map-empty-text {
+  font-size: 12px;
+  color: #2a4770;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.map-live,
+.map-photo {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #d1ddef;
+  background: #f6f9ff;
+}
+
+.map-live iframe {
+  width: 100%;
+  height: 200px;
+  border: 0;
+}
+
+.map-photo img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 200px;
 }
 
 .map-meta {
@@ -1936,6 +2009,14 @@ th {
   grid-template-columns: 1.2fr 0.8fr;
 }
 
+.attendance-card .panel {
+  box-shadow: 0 12px 24px rgba(16, 34, 64, 0.08);
+}
+
+.attendance-card .panel h3 {
+  margin-bottom: 10px;
+}
+
 .attendance-card .compact-actions {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -2062,7 +2143,7 @@ th {
   }
 
   .employee-main {
-    padding-bottom: 90px;
+    padding-bottom: 120px;
   }
 }
 
@@ -2090,5 +2171,18 @@ th {
 
   .time-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .history-card .table-wrap {
+    width: 100%;
+    border-radius: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .history-card table {
+    min-width: 520px;
   }
 }

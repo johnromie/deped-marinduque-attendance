@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260311-11" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-12" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -174,8 +174,20 @@
           <div class="panel">
             <h3>Attendance Today</h3>
             <div class="map-card">
-              <div class="map-placeholder">
+              <div class="map-placeholder" id="attendanceMapPlaceholder">
                 <div class="map-pin"></div>
+                <div class="map-empty-text">Map loads after time in/out.</div>
+              </div>
+              <div class="map-live hidden" id="attendanceMapWrap">
+                <iframe
+                  id="attendanceMap"
+                  title="Attendance Map"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+              <div class="map-photo hidden" id="attendancePhotoWrap">
+                <img id="attendancePhoto" alt="Attendance photo" />
               </div>
               <div class="map-meta">
                 <span>Mobile Photo</span>
@@ -325,6 +337,6 @@
       </div>
     </main>
 
-    <script src="/app.js?v=20260311-11"></script>
+    <script src="/app.js?v=20260311-12"></script>
   </body>
 </html>

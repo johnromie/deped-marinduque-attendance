@@ -52,6 +52,11 @@ const forgotToggle = document.getElementById('forgotToggle');
 const forgotPanel = document.getElementById('forgotPanel');
 const registerToggle = document.getElementById('registerToggle');
 const registerPanel = document.getElementById('registerPanel');
+const attendanceMapPlaceholder = document.getElementById('attendanceMapPlaceholder');
+const attendanceMapWrap = document.getElementById('attendanceMapWrap');
+const attendanceMap = document.getElementById('attendanceMap');
+const attendancePhotoWrap = document.getElementById('attendancePhotoWrap');
+const attendancePhoto = document.getElementById('attendancePhoto');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -63,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-11';
+const APP_CACHE_NAME = 'app-shell-v20260311-12';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -347,6 +352,46 @@ function renderTimeline(records) {
     .join('');
 }
 
+function buildOsmEmbedUrl(lat, lng) {
+  const delta = 0.01;
+  const minLng = lng - delta;
+  const minLat = lat - delta;
+  const maxLng = lng + delta;
+  const maxLat = lat + delta;
+  const bbox = `${minLng},${minLat},${maxLng},${maxLat}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat},${lng}`;
+}
+
+function updateAttendanceMapAndPhoto(todayRecords) {
+  if (!attendanceMapWrap || !attendanceMap || !attendanceMapPlaceholder) return;
+
+  const sorted = [...(todayRecords || [])].sort((a, b) => new Date(a.timestampIso) - new Date(b.timestampIso));
+  const withLocation = sorted.filter((r) => Number.isFinite(Number(r.latitude)) && Number.isFinite(Number(r.longitude)));
+  const withPhoto = sorted.filter((r) => r.photoUrl);
+
+  const latestLoc = withLocation.at(-1);
+  if (latestLoc) {
+    const lat = Number(latestLoc.latitude);
+    const lng = Number(latestLoc.longitude);
+    attendanceMap.src = buildOsmEmbedUrl(lat, lng);
+    attendanceMapWrap.classList.remove('hidden');
+    attendanceMapPlaceholder.classList.add('hidden');
+  } else {
+    attendanceMapWrap.classList.add('hidden');
+    attendanceMapPlaceholder.classList.remove('hidden');
+  }
+
+  if (attendancePhotoWrap && attendancePhoto) {
+    const latestPhoto = withPhoto.at(-1);
+    if (latestPhoto) {
+      attendancePhoto.src = latestPhoto.photoUrl;
+      attendancePhotoWrap.classList.remove('hidden');
+    } else {
+      attendancePhotoWrap.classList.add('hidden');
+    }
+  }
+}
+
 function updateDashboardSummary(todayRecords, allRecords) {
   const monthNow = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Manila',
@@ -379,6 +424,7 @@ function updateDashboardSummary(todayRecords, allRecords) {
   if (lateCountEl) lateCountEl.textContent = String(lateDays);
   if (absentCountEl) absentCountEl.textContent = String(absentDays);
   renderTimeline(todayRecords);
+  updateAttendanceMapAndPhoto(todayRecords);
 }
 
 async function refreshDashboardFromRecords(currentRecords = []) {
