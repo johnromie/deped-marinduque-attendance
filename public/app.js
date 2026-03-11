@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-12';
+const APP_CACHE_NAME = 'app-shell-v20260311-13';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -352,14 +352,8 @@ function renderTimeline(records) {
     .join('');
 }
 
-function buildOsmEmbedUrl(lat, lng) {
-  const delta = 0.01;
-  const minLng = lng - delta;
-  const minLat = lat - delta;
-  const maxLng = lng + delta;
-  const maxLat = lat + delta;
-  const bbox = `${minLng},${minLat},${maxLng},${maxLat}`;
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat},${lng}`;
+function buildGoogleMapsEmbedUrl(lat, lng) {
+  return `https://www.google.com/maps?q=${lat},${lng}&output=embed`;
 }
 
 function updateAttendanceMapAndPhoto(todayRecords) {
@@ -373,7 +367,7 @@ function updateAttendanceMapAndPhoto(todayRecords) {
   if (latestLoc) {
     const lat = Number(latestLoc.latitude);
     const lng = Number(latestLoc.longitude);
-    attendanceMap.src = buildOsmEmbedUrl(lat, lng);
+    attendanceMap.src = buildGoogleMapsEmbedUrl(lat, lng);
     attendanceMapWrap.classList.remove('hidden');
     attendanceMapPlaceholder.classList.add('hidden');
   } else {
