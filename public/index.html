@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260311-03" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-04" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -24,13 +24,13 @@
       </div>
       <div class="topbar-actions">
         <span class="topbar-pill" id="greetingText">Good Morning</span>
+        <button class="hamburger-btn" id="userMenuBtn" type="button" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="menu-dropdown hidden" id="userMenu">
+          <button id="logoutBtnTop" type="button">Logout</button>
+        </div>
       </div>
-      <nav class="topbar-nav">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#attendance">Attendance</a>
-        <a href="#history">Logs</a>
-        <a href="#reports">Reports</a>
-      </nav>
     </header>
 
     <main class="app-shell">
@@ -341,6 +341,6 @@
       </div>
     </main>
 
-    <script src="/app.js?v=20260311-03"></script>
+    <script src="/app.js?v=20260311-04"></script>
   </body>
 </html>

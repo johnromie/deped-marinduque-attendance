@@ -45,6 +45,9 @@ const installNoteEl = document.getElementById('installNote');
 const markInBtn = document.getElementById('markInBtn');
 const markOutBtn = document.getElementById('markOutBtn');
 const topbarEl = document.querySelector('.app-topbar');
+const userMenuBtn = document.getElementById('userMenuBtn');
+const userMenu = document.getElementById('userMenu');
+const logoutBtnTop = document.getElementById('logoutBtnTop');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -56,7 +59,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-03';
+const APP_CACHE_NAME = 'app-shell-v20260311-04';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -946,6 +949,7 @@ document.getElementById('registerBtn').addEventListener('click', handleRegister)
 document.getElementById('forgotBtn').addEventListener('click', handleForgotPassword);
 document.getElementById('changeBtn').addEventListener('click', handleChangePassword);
 document.getElementById('logoutBtn').addEventListener('click', logout);
+if (logoutBtnTop) logoutBtnTop.addEventListener('click', logout);
 document.getElementById('startCameraBtn').addEventListener('click', startCamera);
 document.getElementById('captureBtn').addEventListener('click', capturePhoto);
 document.getElementById('locationBtn').addEventListener('click', getAccurateLocation);
@@ -972,6 +976,17 @@ document.querySelectorAll('.sidebar-nav a').forEach((link) => {
     setUserSection(target);
   });
 });
+
+if (userMenuBtn && userMenu) {
+  userMenuBtn.addEventListener('click', () => {
+    userMenu.classList.toggle('hidden');
+  });
+  document.addEventListener('click', (event) => {
+    if (!userMenu.contains(event.target) && !userMenuBtn.contains(event.target)) {
+      userMenu.classList.add('hidden');
+    }
+  });
+}
 
 if (inAppBrowser) {
   browserHint.textContent = 'In-app browser detected. Camera/GPS are often blocked here. Open this link in Safari/Chrome.';

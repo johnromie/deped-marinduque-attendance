@@ -955,6 +955,43 @@ th {
   display: flex;
   gap: 8px;
   align-items: center;
+  position: relative;
+}
+
+.hamburger-btn {
+  width: 38px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: grid;
+  gap: 4px;
+  padding: 7px 9px;
+  box-shadow: none;
+}
+
+.hamburger-btn span {
+  display: block;
+  height: 2px;
+  background: #f1f6ff;
+  border-radius: 999px;
+}
+
+.menu-dropdown {
+  position: absolute;
+  margin-top: 46px;
+  right: 14px;
+  background: #ffffff;
+  border: 1px solid #d5e0f2;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 10px 20px rgba(12, 24, 45, 0.2);
+  z-index: 20;
+}
+
+.menu-dropdown button {
+  width: 100%;
+  background: linear-gradient(180deg, #2b5ca8 0%, #173d76 100%);
 }
 
 .topbar-pill {
@@ -1842,8 +1879,8 @@ th {
   display: grid;
   gap: 4px;
   justify-items: center;
-  padding: 10px 8px;
-  min-height: 62px;
+  padding: 8px 6px;
+  min-height: 58px;
   font-size: 12px;
   font-weight: 800;
   box-shadow: none;
@@ -1857,8 +1894,8 @@ th {
 }
 
 .mobile-nav .nav-icon {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #d6e0f2;
@@ -1867,8 +1904,8 @@ th {
 }
 
 .mobile-nav .nav-icon img {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   object-fit: contain;
 }
 
