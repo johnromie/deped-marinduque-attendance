@@ -436,6 +436,21 @@ th {
   gap: 10px;
 }
 
+.auth-links .link-btn {
+  flex: 1;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #ffffff;
+  background: linear-gradient(180deg, #2b5ca8 0%, #173d76 100%);
+  box-shadow: 0 8px 16px rgba(22, 72, 143, 0.2);
+}
+
+.auth-links .link-btn:hover {
+  filter: brightness(0.98);
+  text-decoration: none;
+}
+
 .auth-footer {
   margin-top: 12px;
   text-align: center;
