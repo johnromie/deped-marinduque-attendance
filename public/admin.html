@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2f57" />
     <title>Admin Dashboard - DepEd Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260311-10" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-11" />
   </head>
   <body class="attendance-app sdo-theme admin-app is-logged-in">
     <header class="app-topbar admin-topbar">
@@ -23,7 +23,7 @@
       <nav class="topbar-nav admin-nav">
         <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
         <a href="#employees" data-section="employees">Employees</a>
-        <a href="#attendance" data-section="dashboard">Attendance</a>
+        <a href="#attendance" data-section="attendance">Attendance</a>
         <a href="#reports" data-section="reports">Reports</a>
       </nav>
     </header>
@@ -60,7 +60,7 @@
           </article>
         </section>
 
-        <div class="admin-filter-bar" id="attendance">
+        <div class="admin-filter-bar" id="dashboardFilters">
           <label class="filter-field">
             <span>Search Employee</span>
             <input id="employeeIdFilter" type="text" placeholder="Name or Employee ID" />
@@ -115,56 +115,61 @@
             <h2>Employees List</h2>
             <p class="muted">Manage employee records and add new staff.</p>
           </div>
-          <button id="addEmployeeToggle" type="button">Add Employee</button>
         </div>
 
-        <div class="admin-employee-grid">
-          <div class="employee-list-card">
-            <label class="filter-field">
-              <span>Search Employee</span>
-              <input id="employeeSearch" type="text" placeholder="Search name, ID, or position" />
-            </label>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="employeesBody"></tbody>
-              </table>
-            </div>
+        <div class="employee-list-card">
+          <label class="filter-field">
+            <span>Search Employee</span>
+            <input id="employeeSearch" type="text" placeholder="Search name, ID, or position" />
+          </label>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Position</th>
+                  <th>Office</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="employeesBody"></tbody>
+            </table>
           </div>
+        </div>
+      </section>
 
-          <div class="employee-form-card hidden" id="employeeFormCard">
-            <h3>Add Employee</h3>
-            <label>Full Name
-              <input id="addFullName" type="text" placeholder="Juan Dela Cruz" />
-            </label>
-            <label>Position
-              <input id="addPosition" type="text" placeholder="IT Officer" />
-            </label>
-            <label>Office
-              <input id="addOffice" type="text" placeholder="ICT Unit" />
-            </label>
-            <label>Employee ID
-              <input id="addEmployeeId" type="text" placeholder="SDO-001" />
-            </label>
-            <label>Email
-              <input id="addEmail" type="email" placeholder="name@deped.gov.ph" />
-            </label>
-            <label>Password
-              <input id="addPassword" type="password" placeholder="Password" />
-            </label>
-            <div class="actions">
-              <button id="addEmployeeBtn" type="button">Save</button>
-              <button id="cancelEmployeeBtn" type="button" class="secondary">Cancel</button>
-            </div>
+      <section class="card admin-section hidden" id="attendance">
+        <div class="admin-header">
+          <div>
+            <h2>Add Employee</h2>
+            <p class="muted">Create new employee accounts and credentials.</p>
+          </div>
+        </div>
+
+        <div class="employee-form-card" id="employeeFormCard">
+          <label>Full Name
+            <input id="addFullName" type="text" placeholder="Juan Dela Cruz" />
+          </label>
+          <label>Position
+            <input id="addPosition" type="text" placeholder="IT Officer" />
+          </label>
+          <label>Office
+            <input id="addOffice" type="text" placeholder="ICT Unit" />
+          </label>
+          <label>Employee ID
+            <input id="addEmployeeId" type="text" placeholder="SDO-001" />
+          </label>
+          <label>Email
+            <input id="addEmail" type="email" placeholder="name@deped.gov.ph" />
+          </label>
+          <label>Password
+            <input id="addPassword" type="password" placeholder="Password" />
+          </label>
+          <div class="actions">
+            <button id="addEmployeeBtn" type="button">Save</button>
+            <button id="cancelEmployeeBtn" type="button" class="secondary">Cancel</button>
           </div>
         </div>
       </section>
@@ -200,6 +205,6 @@
       </section>
     </main>
 
-    <script src="/admin.js?v=20260311-10"></script>
+    <script src="/admin.js?v=20260311-11"></script>
   </body>
 </html>

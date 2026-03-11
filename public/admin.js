@@ -12,7 +12,6 @@ const dateFilterInput = document.getElementById('dateFilter');
 const officeFilterInput = document.getElementById('officeFilter');
 const employeeSearchInput = document.getElementById('employeeSearch');
 const employeesBody = document.getElementById('employeesBody');
-const addEmployeeToggle = document.getElementById('addEmployeeToggle');
 const employeeFormCard = document.getElementById('employeeFormCard');
 const addFullNameInput = document.getElementById('addFullName');
 const addPositionInput = document.getElementById('addPosition');
@@ -788,14 +787,8 @@ function logout() {
 document.getElementById('loadBtn').addEventListener('click', loadRecords);
 document.getElementById('summaryBtn').addEventListener('click', loadSummary);
 document.getElementById('logoutBtn').addEventListener('click', logout);
-if (addEmployeeToggle) {
-  addEmployeeToggle.addEventListener('click', () => {
-    if (employeeFormCard) employeeFormCard.classList.toggle('hidden');
-  });
-}
 if (cancelEmployeeBtn) {
   cancelEmployeeBtn.addEventListener('click', () => {
-    if (employeeFormCard) employeeFormCard.classList.add('hidden');
     resetEmployeeForm();
   });
 }
