@@ -997,9 +997,15 @@ function handlePasswordLogin(req, res) {
   if (!matchPool.length) matchPool = nameCandidates;
 
   const user = matchPool.find((u) => verifyPassword(String(password), u.passwordSalt, u.passwordHash));
+  const normalizedAdminEmployeeId = String(config.adminEmployeeId || '').trim().toLowerCase();
+  const normalizedAdminFullName = String(config.adminFullName || '').trim().toLowerCase();
+  const isAdminIdentifier =
+    normalized === config.adminUsername ||
+    normalized === normalizedAdminEmployeeId ||
+    normalized === normalizedAdminFullName;
 
   if (!user) {
-    if (matchPool.length > 1) {
+    if (matchPool.length > 1 && !isAdminIdentifier) {
       return res.status(401).json({
         message: 'Multiple accounts match this ID. Please login using your username.'
       });
@@ -1007,7 +1013,7 @@ function handlePasswordLogin(req, res) {
     // Auto-heal admin password drift: if env admin password is provided and typed correctly,
     // sync stored hash so login recovers without manual DB editing.
     if (
-      normalized === config.adminUsername &&
+      isAdminIdentifier &&
       (String(password) === String(config.adminPassword) ||
         String(password) === 'admin' ||
         String(password) === 'Admin12345!')

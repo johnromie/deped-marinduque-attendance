@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-14';
+const APP_CACHE_NAME = 'app-shell-v20260312-01';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -110,9 +110,12 @@ async function api(path, options = {}) {
     if (res.ok) return payload;
 
     if (res.status === 401) {
-      saveToken('');
-      currentUser = null;
-      renderAuthState();
+      const shouldLogout = path === '/api/auth/me' || path.startsWith('/api/admin');
+      if (shouldLogout) {
+        saveToken('');
+        currentUser = null;
+        renderAuthState();
+      }
     }
 
     if (canRetry && retryableStatus.has(res.status) && attempt < maxRetries) {
@@ -521,18 +524,37 @@ async function handleLogin() {
   if (!username || !password) return alert('Enter username and password.');
 
   try {
-    const payload = await api('/api/auth/login', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
+    let payload;
+    try {
+      payload = await api('/api/auth/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+    } catch (err) {
+      const msg = String(err?.message || '');
+      if (/404/.test(msg)) {
+        payload = await api('/api/login', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+      } else {
+        throw err;
+      }
+    }
     saveToken(payload.token);
     currentUser = payload.user;
     if (forgotPanel) forgotPanel.classList.add('hidden');
     if (registerPanel) registerPanel.classList.add('hidden');
     renderAuthState();
-    await fetchConfig();
-    await loadRecords();
+    try {
+      await fetchConfig();
+      await loadRecords();
+    } catch (err) {
+      setStatus('logged in (data loading failed)');
+      setInfo(err?.message || 'Logged in, but failed to load data. Try again.');
+    }
   } catch (err) {
     setAuthStatus(err.message || 'Login failed.');
     alert(err.message);
@@ -561,6 +583,8 @@ async function handleRegister() {
     });
     saveToken(payload.token);
     currentUser = payload.user;
+    if (forgotPanel) forgotPanel.classList.add('hidden');
+    if (registerPanel) registerPanel.classList.add('hidden');
     renderAuthState();
     await fetchConfig();
     await loadRecords();
@@ -1111,17 +1135,30 @@ if (isIos()) {
   showInstallCard();
 }
 
-hardClearLegacyCache()
-  .then(() => registerServiceWorker())
-  .then(() => fetchBuildInfo())
-  .then(() => fetchMe())
-  .then(() => fetchConfig())
-  .then(() => loadRecords())
-  .catch(() => {
-    saveToken('');
-    currentUser = null;
-    renderAuthState();
-  });
+async function bootstrapApp() {
+  await hardClearLegacyCache();
+  await registerServiceWorker();
+  await fetchBuildInfo();
+  try {
+    await fetchMe();
+  } catch {
+    // fetchMe already clears invalid tokens; avoid wiping state on transient errors.
+  }
+  try {
+    await fetchConfig();
+  } catch {
+    // ignore config errors on first paint
+  }
+  try {
+    await loadRecords();
+  } catch {
+    // keep UI usable even if attendance fails to load
+  }
+}
+
+bootstrapApp().catch(() => {
+  renderAuthState();
+});
 
 
 
