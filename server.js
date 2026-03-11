@@ -987,29 +987,59 @@ function handlePasswordLogin(req, res) {
   }
 
   const users = readJsonArray(usersFile);
-  const user = findUserByLoginIdentifier(users, username);
-  const passwordOk = Boolean(user && verifyPassword(String(password), user.passwordSalt, user.passwordHash));
-  if (!user || !passwordOk) {
+  const normalized = String(username || '').trim().toLowerCase();
+  const candidates = users.filter((u) => u.username === normalized);
+  const employeeCandidates = users.filter(
+    (u) => String(u.employeeId || '').trim().toLowerCase() === normalized
+  );
+  const matchPool = candidates.length ? candidates : employeeCandidates;
+  const user = matchPool.find((u) => verifyPassword(String(password), u.passwordSalt, u.passwordHash));
+
+  if (!user) {
     // Auto-heal admin password drift: if env admin password is provided and typed correctly,
     // sync stored hash so login recovers without manual DB editing.
     if (
-      user &&
-      user.role === 'admin' &&
-      user.username === config.adminUsername &&
+      normalized === config.adminUsername &&
       (String(password) === String(config.adminPassword) ||
         String(password) === 'admin' ||
         String(password) === 'Admin12345!')
     ) {
-      const { salt, hash } = hashPassword(String(password));
-      user.passwordSalt = salt;
-      user.passwordHash = hash;
-      const idx = users.findIndex((u) => u.id === user.id);
-      if (idx >= 0) {
-        users[idx] = user;
+      let adminUser = users.find((u) => u.username === config.adminUsername && u.role === 'admin');
+      if (!adminUser) {
+        const { salt, hash } = hashPassword(String(password));
+        adminUser = {
+          id: uuidv4(),
+          username: config.adminUsername,
+          fullName: config.adminFullName,
+          employeeId: config.adminEmployeeId,
+          role: 'admin',
+          email: String(config.adminEmail || '').trim().toLowerCase(),
+          phone: normalizePhone(config.adminPhone || ''),
+          otpChannel: ['email', 'phone'].includes(config.adminOtpChannel)
+            ? config.adminOtpChannel
+            : String(config.adminEmail || '').trim()
+              ? 'email'
+              : 'phone',
+          passwordSalt: salt,
+          passwordHash: hash,
+          securityQuestion: config.adminSecurityQuestion,
+          securityAnswerHash: hashSecurityAnswer(config.adminSecurityAnswer),
+          createdAt: new Date().toISOString()
+        };
+        users.push(adminUser);
         writeJsonArray(usersFile, users);
+      } else {
+        const { salt, hash } = hashPassword(String(password));
+        adminUser.passwordSalt = salt;
+        adminUser.passwordHash = hash;
+        const idx = users.findIndex((u) => u.id === adminUser.id);
+        if (idx >= 0) {
+          users[idx] = adminUser;
+          writeJsonArray(usersFile, users);
+        }
       }
-      const token = createSessionToken(user);
-      return res.json({ message: 'Login successful.', token, user: sanitizeUser(user) });
+      const token = createSessionToken(adminUser);
+      return res.json({ message: 'Login successful.', token, user: sanitizeUser(adminUser) });
     }
     return res.status(401).json({ message: 'Invalid username or password.' });
   }
