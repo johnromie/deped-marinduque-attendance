@@ -351,24 +351,85 @@ th {
   animation: liftIn 300ms ease;
 }
 
-.attendance-app .auth-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.attendance-app .auth-card {
+  background: linear-gradient(160deg, #eaf1ff 0%, #f7fbff 55%, #eef6ff 100%);
+  border: 1px solid #d6e1f4;
 }
 
-.attendance-app .auth-head p {
-  color: #617995;
-  margin: 6px 0 0;
+.auth-brand {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.attendance-app .auth-logo {
-  width: 66px;
-  height: 66px;
+.auth-logo-lg {
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
+  background: #fff;
+  border: 3px solid #d6e1f4;
   object-fit: cover;
-  border: 2px solid #d3e3f8;
+  box-shadow: 0 10px 18px rgba(12, 24, 45, 0.12);
+}
+
+.auth-title {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #214070;
+  font-size: 18px;
+}
+
+.auth-subtitle {
+  color: #4f6b8c;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.login-box,
+.forgot-box {
+  background: #ffffff;
+  border: 1px solid #d6e1f4;
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  box-shadow: 0 12px 24px rgba(16, 34, 64, 0.08);
+}
+
+.login-box button {
+  width: 100%;
+}
+
+.login-box .link-btn {
+  justify-self: center;
+  width: auto;
+}
+
+.forgot-box {
+  margin-top: 10px;
+}
+
+.link-btn {
+  background: transparent;
+  color: #1f4b8d;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+  transform: none;
+}
+
+.auth-footer {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: #58708f;
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
 .attendance-app .top-hero {
@@ -389,16 +450,24 @@ th {
   color: #d5e8ff;
 }
 
-.attendance-app #displayName {
+.attendance-app .top-hero #displayName {
   color: #fff;
   margin-top: 2px;
 }
 
-.attendance-app #userBadge {
+.attendance-app .top-hero #userBadge {
   margin-top: 8px;
   color: #deedff;
   font-size: 13px;
   font-weight: 700;
+}
+
+.profile-card #displayName {
+  color: #172d4f;
+}
+
+.profile-card #userBadge {
+  color: #4d6380;
 }
 
 .attendance-app .hero-time {
@@ -1020,6 +1089,7 @@ th {
   border-radius: 16px;
   padding: 12px 14px;
   min-width: 260px;
+  color: #1f2f49;
 }
 
 .profile-photo {
@@ -1039,7 +1109,7 @@ th {
 
 .profile-meta {
   font-size: 13px;
-  color: #536a84;
+  color: #3f556f;
 }
 
 .header-actions {
@@ -1871,10 +1941,10 @@ th {
   background: #e9f0fb;
   border: 1px solid #d7e2f3;
   border-radius: 18px;
-  padding: 10px;
+  padding: 8px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0 10px 24px rgba(12, 24, 45, 0.15);
 }
 
@@ -1888,13 +1958,13 @@ th {
   background: #ffffff;
   color: #2a4365;
   border: 1px solid #d7e2f3;
-  border-radius: 16px;
+  border-radius: 14px;
   display: grid;
   gap: 4px;
   justify-items: center;
   padding: 6px 4px;
-  min-height: 54px;
-  font-size: 12px;
+  min-height: 48px;
+  font-size: 11px;
   font-weight: 800;
   box-shadow: none;
 }
@@ -1907,8 +1977,8 @@ th {
 }
 
 .mobile-nav .nav-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #d6e0f2;
@@ -1917,8 +1987,8 @@ th {
 }
 
 .mobile-nav .nav-icon img {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
 }
 

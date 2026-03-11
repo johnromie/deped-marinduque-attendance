@@ -48,6 +48,8 @@ const topbarEl = document.querySelector('.app-topbar');
 const userMenuBtn = document.getElementById('userMenuBtn');
 const userMenu = document.getElementById('userMenu');
 const logoutBtnTop = document.getElementById('logoutBtnTop');
+const forgotToggle = document.getElementById('forgotToggle');
+const forgotPanel = document.getElementById('forgotPanel');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let currentUser = null;
@@ -59,7 +61,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-05';
+const APP_CACHE_NAME = 'app-shell-v20260311-08';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -944,11 +946,17 @@ photoFileInput.addEventListener('change', async (event) => {
 });
 
 document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => activateTab(btn.dataset.tab)));
-document.getElementById('loginBtn').addEventListener('click', handleLogin);
-document.getElementById('registerBtn').addEventListener('click', handleRegister);
-document.getElementById('forgotBtn').addEventListener('click', handleForgotPassword);
-document.getElementById('changeBtn').addEventListener('click', handleChangePassword);
-document.getElementById('logoutBtn').addEventListener('click', logout);
+const loginBtn = document.getElementById('loginBtn');
+const registerBtn = document.getElementById('registerBtn');
+const forgotBtn = document.getElementById('forgotBtn');
+const changeBtn = document.getElementById('changeBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+if (loginBtn) loginBtn.addEventListener('click', handleLogin);
+if (registerBtn) registerBtn.addEventListener('click', handleRegister);
+if (forgotBtn) forgotBtn.addEventListener('click', handleForgotPassword);
+if (changeBtn) changeBtn.addEventListener('click', handleChangePassword);
+if (logoutBtn) logoutBtn.addEventListener('click', logout);
 if (logoutBtnTop) logoutBtnTop.addEventListener('click', logout);
 document.getElementById('startCameraBtn').addEventListener('click', startCamera);
 document.getElementById('captureBtn').addEventListener('click', capturePhoto);
@@ -985,6 +993,12 @@ if (userMenuBtn && userMenu) {
     if (!userMenu.contains(event.target) && !userMenuBtn.contains(event.target)) {
       userMenu.classList.add('hidden');
     }
+  });
+}
+
+if (forgotToggle && forgotPanel) {
+  forgotToggle.addEventListener('click', () => {
+    forgotPanel.classList.toggle('hidden');
   });
 }
 

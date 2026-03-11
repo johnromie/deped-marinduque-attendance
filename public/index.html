@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260311-05" />
+    <link rel="stylesheet" href="/styles.css?v=20260311-08" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -35,56 +35,24 @@
 
     <main class="app-shell">
       <section class="card auth-card" id="authCard">
-        <div class="auth-head">
-          <div>
-            <h2>Welcome Back</h2>
-            <p>Sign in to continue your attendance logging.</p>
-          </div>
-          <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="auth-logo" />
+        <div class="auth-brand">
+          <img src="/icons/sdo-marinduque.jpg" alt="SDO Marinduque" class="auth-logo-lg" />
+          <div class="auth-title">SDO MARINDUQUE</div>
+          <div class="auth-subtitle">Attendance Monitoring System</div>
         </div>
 
-        <p class="hint" id="buildInfo">Build: loading...</p>
-
-        <div class="tabs">
-          <button class="tab active" data-tab="login">Login</button>
-          <button class="tab" data-tab="register">Register</button>
-          <button class="tab" data-tab="forgot">Forgot Password</button>
-          <button class="tab" data-tab="change">Change Password</button>
-        </div>
-
-        <div class="tab-panel" id="panel-login">
-          <label>Username or Employee ID
+        <div class="login-box">
+          <label>Username
             <input id="loginUsername" type="text" autocomplete="username" placeholder="e.g. admin or SDO-001" />
           </label>
           <label>Password
             <input id="loginPassword" type="password" autocomplete="current-password" />
           </label>
           <button id="loginBtn" type="button">Login</button>
+          <button id="forgotToggle" type="button" class="link-btn">Forgot Password?</button>
         </div>
 
-        <div class="tab-panel hidden" id="panel-register">
-          <label>Employee ID
-            <input id="regEmployeeId" type="text" placeholder="SDO-001" />
-          </label>
-          <label>Full Name
-            <input id="regFullName" type="text" placeholder="Juan Dela Cruz" />
-          </label>
-          <label>Username
-            <input id="regUsername" type="text" autocomplete="username" />
-          </label>
-          <label>Password (min 8 chars)
-            <input id="regPassword" type="password" autocomplete="new-password" />
-          </label>
-          <label>Security Question
-            <input id="regQuestion" type="text" placeholder="What is your favorite color?" />
-          </label>
-          <label>Security Answer
-            <input id="regAnswer" type="text" />
-          </label>
-          <button id="registerBtn" type="button">Create Account</button>
-        </div>
-
-        <div class="tab-panel hidden" id="panel-forgot">
+        <div class="forgot-box hidden" id="forgotPanel">
           <label>Username or Employee ID
             <input id="forgotUsername" type="text" autocomplete="username" placeholder="e.g. admin or SDO-001" />
           </label>
@@ -97,15 +65,7 @@
           <button id="forgotBtn" type="button">Reset Password</button>
         </div>
 
-        <div class="tab-panel hidden" id="panel-change">
-          <label>Old Password
-            <input id="changeOldPassword" type="password" autocomplete="current-password" />
-          </label>
-          <label>New Password
-            <input id="changeNewPassword" type="password" autocomplete="new-password" />
-          </label>
-          <button id="changeBtn" type="button">Change Password</button>
-        </div>
+        <div class="auth-footer">SDO MARINDUQUE</div>
 
         <div class="status" id="authStatus">Auth Status: not logged in</div>
       </section>
@@ -120,7 +80,6 @@
           <a href="#dashboard" class="active">Dashboard</a>
           <a href="#attendance">Mark Attendance</a>
           <a href="#history">My Attendance Records</a>
-          <a href="#reports">Reports</a>
           <a href="#profile">Profile</a>
         </nav>
         <div class="sidebar-profile">
@@ -341,6 +300,6 @@
       </div>
     </main>
 
-    <script src="/app.js?v=20260311-05"></script>
+    <script src="/app.js?v=20260311-08"></script>
   </body>
 </html>
