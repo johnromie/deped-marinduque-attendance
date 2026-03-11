@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260311-13';
+const APP_CACHE_NAME = 'app-shell-v20260311-14';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -528,10 +528,13 @@ async function handleLogin() {
     });
     saveToken(payload.token);
     currentUser = payload.user;
+    if (forgotPanel) forgotPanel.classList.add('hidden');
+    if (registerPanel) registerPanel.classList.add('hidden');
     renderAuthState();
     await fetchConfig();
     await loadRecords();
   } catch (err) {
+    setAuthStatus(err.message || 'Login failed.');
     alert(err.message);
   }
 }

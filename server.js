@@ -992,10 +992,18 @@ function handlePasswordLogin(req, res) {
   const employeeCandidates = users.filter(
     (u) => String(u.employeeId || '').trim().toLowerCase() === normalized
   );
-  const matchPool = candidates.length ? candidates : employeeCandidates;
+  const nameCandidates = users.filter((u) => String(u.fullName || '').trim().toLowerCase() === normalized);
+  let matchPool = candidates.length ? candidates : employeeCandidates;
+  if (!matchPool.length) matchPool = nameCandidates;
+
   const user = matchPool.find((u) => verifyPassword(String(password), u.passwordSalt, u.passwordHash));
 
   if (!user) {
+    if (matchPool.length > 1) {
+      return res.status(401).json({
+        message: 'Multiple accounts match this ID. Please login using your username.'
+      });
+    }
     // Auto-heal admin password drift: if env admin password is provided and typed correctly,
     // sync stored hash so login recovers without manual DB editing.
     if (
