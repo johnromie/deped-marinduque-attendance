@@ -1285,6 +1285,19 @@ th {
   .sdo-theme .tabs {
     grid-template-columns: 1fr;
   }
+
+  .sdo-theme .tab {
+    border-radius: 10px;
+    background: #eff3fa;
+    border: 1px solid #d6e0f2;
+    color: #2a3f5d;
+    font-weight: 800;
+  }
+
+  .sdo-theme .tab.active {
+    background: linear-gradient(180deg, #2b5ca8 0%, #173d76 100%);
+    color: #fff;
+  }
 }
 
 .sdo-theme .app-topbar {
@@ -1879,8 +1892,8 @@ th {
   display: grid;
   gap: 4px;
   justify-items: center;
-  padding: 8px 6px;
-  min-height: 58px;
+  padding: 6px 4px;
+  min-height: 54px;
   font-size: 12px;
   font-weight: 800;
   box-shadow: none;
@@ -1894,8 +1907,8 @@ th {
 }
 
 .mobile-nav .nav-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #d6e0f2;
@@ -1904,8 +1917,8 @@ th {
 }
 
 .mobile-nav .nav-icon img {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
 }
 
@@ -1965,12 +1978,12 @@ th {
   }
 
   .stat-card {
-    padding: 12px;
+    padding: 10px;
     border-radius: 14px;
   }
 
   .stat-card h3 {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .attendance-card .compact-actions {
