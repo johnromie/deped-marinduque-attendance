@@ -1164,6 +1164,23 @@ th {
   box-shadow: 0 16px 34px rgba(14, 36, 72, 0.14);
 }
 
+.history-card .table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+}
+
+.history-card .table-wrap::-webkit-scrollbar {
+  height: 8px;
+}
+
+.history-card .table-wrap::-webkit-scrollbar-thumb {
+  background: #c3d3ec;
+  border-radius: 999px;
+}
+
 .profile-card {
   display: flex;
   gap: 14px;

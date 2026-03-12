@@ -68,7 +68,8 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260312-08';
+const APP_CACHE_NAME = 'app-shell-v20260312-09';
+let latestLocationLabel = '';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -359,6 +360,37 @@ function buildGoogleMapsEmbedUrl(lat, lng) {
   return `https://www.google.com/maps?q=${lat},${lng}&output=embed`;
 }
 
+async function reverseGeocode(lat, lng) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000);
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+      signal: controller.signal
+    });
+    if (!res.ok) return '';
+    const data = await res.json();
+    return data?.display_name || data?.name || '';
+  } catch {
+    return '';
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function updateLocationLabel(lat, lng) {
+  if (!officeNameDisplayEl) return;
+  const label = await reverseGeocode(lat, lng);
+  if (label) {
+    latestLocationLabel = label;
+    officeNameDisplayEl.textContent = label;
+    return;
+  }
+  latestLocationLabel = `Lat ${lat.toFixed(5)}, Lng ${lng.toFixed(5)}`;
+  officeNameDisplayEl.textContent = latestLocationLabel;
+}
+
 function updateAttendanceMapAndPhoto(todayRecords) {
   if (!attendanceMapWrap || !attendanceMap || !attendanceMapPlaceholder) return;
 
@@ -373,6 +405,7 @@ function updateAttendanceMapAndPhoto(todayRecords) {
     attendanceMap.src = buildGoogleMapsEmbedUrl(lat, lng);
     attendanceMapWrap.classList.remove('hidden');
     attendanceMapPlaceholder.classList.add('hidden');
+    updateLocationLabel(lat, lng);
   } else {
     attendanceMapWrap.classList.add('hidden');
     attendanceMapPlaceholder.classList.remove('hidden');
@@ -501,7 +534,7 @@ async function fetchConfig() {
   try {
     const payload = await api('/api/config');
     officeConfig = payload;
-    if (officeNameDisplayEl && payload?.officeName) {
+    if (officeNameDisplayEl && payload?.officeName && !latestLocationLabel) {
       officeNameDisplayEl.textContent = payload.officeName;
     }
     return payload;
@@ -829,6 +862,7 @@ async function getAccurateLocation() {
     const coords = await collectAccurateLocation(strictTarget, 4, 35000);
 
     latestLocation = { latitude: coords.latitude, longitude: coords.longitude, gpsAccuracyMeters: coords.gpsAccuracyMeters };
+    await updateLocationLabel(coords.latitude, coords.longitude);
 
     let details = `Lat ${coords.latitude.toFixed(6)}, Lng ${coords.longitude.toFixed(6)}, GPS +/- ${Math.round(coords.gpsAccuracyMeters)}m`;
     if (cfg) {
@@ -908,6 +942,7 @@ async function submitAttendance(intent) {
     setInfo(
       `${payload.record.attendanceTypeLabel} | ${payload.record.attendanceStatus} | Distance ${payload.record.distanceMeters}m | GPS +/- ${payload.record.gpsAccuracyMeters}m`
     );
+    if (dateFilterInput) dateFilterInput.value = manilaDateKey(new Date());
     await loadRecords();
   } catch (err) {
     setStatus('submit error');
@@ -971,12 +1006,13 @@ function groupRecordsForUser(records) {
 }
 
 async function loadRecords() {
-  const date = dateFilterInput.value;
-  const qs = date ? `?date=${encodeURIComponent(date)}` : '';
-
   try {
-    const payload = await api(`/api/attendance${qs}`);
-    const records = Array.isArray(payload.records) ? payload.records : [];
+    const payload = await api('/api/attendance');
+    let records = Array.isArray(payload.records) ? payload.records : [];
+    const date = String(dateFilterInput.value || '').trim();
+    if (date) {
+      records = records.filter((r) => String(r.localDate || manilaDateKey(r.timestampIso)).startsWith(date));
+    }
     const grouped = groupRecordsForUser(records);
     recordsBody.innerHTML = grouped
       .map((r) => {
