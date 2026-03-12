@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2f57" />
     <title>Admin Dashboard - DepEd Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260312-07" />
+    <link rel="stylesheet" href="/styles.css?v=20260312-08" />
   </head>
   <body class="attendance-app sdo-theme admin-app is-logged-in">
     <header class="app-topbar admin-topbar">
@@ -113,16 +113,18 @@
         <div class="admin-header admin-header-row">
           <div>
             <h2>Employees List</h2>
-            <p class="muted">Manage employee records and add new staff.</p>
+            <p class="muted">Search and manage employee records.</p>
           </div>
           <button id="goAddEmployeeBtn" type="button" class="secondary">+ Add Employee</button>
         </div>
 
         <div class="employee-list-card">
-          <label class="filter-field">
-            <span>Search Employee</span>
-            <input id="employeeSearch" type="text" placeholder="Search name, ID, or position" />
-          </label>
+          <div class="employee-tools">
+            <label class="filter-field">
+              <span>Search Employee</span>
+              <input id="employeeSearch" type="text" placeholder="Search name or ID" />
+            </label>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -131,7 +133,6 @@
                   <th>Name</th>
                   <th>Position</th>
                   <th>Office</th>
-                  <th>Email</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -139,17 +140,9 @@
             </table>
           </div>
         </div>
-      </section>
 
-      <section class="card admin-section hidden" id="attendance">
-        <div class="admin-header">
-          <div>
-            <h2>Add Employee</h2>
-            <p class="muted">Create new employee accounts and credentials.</p>
-          </div>
-        </div>
-
-        <div class="employee-form-card" id="employeeFormCard">
+        <div class="employee-form-card hidden" id="employeeFormCard">
+          <h3>Add Employee</h3>
           <label>Full Name
             <input id="addFullName" type="text" placeholder="Juan Dela Cruz" />
           </label>
@@ -172,6 +165,49 @@
             <button id="addEmployeeBtn" type="button">Save</button>
             <button id="cancelEmployeeBtn" type="button" class="secondary">Cancel</button>
           </div>
+        </div>
+      </section>
+
+      <section class="card admin-section hidden" id="attendance">
+        <div class="admin-header">
+          <div>
+            <h2>Attendance Monitoring</h2>
+            <p class="muted">Review daily attendance by month and office.</p>
+          </div>
+        </div>
+
+        <div class="admin-filter-bar attendance-filter">
+          <label class="filter-field">
+            <span>Select Month</span>
+            <input id="attendanceMonth" type="month" />
+          </label>
+          <label class="filter-field">
+            <span>Select Office</span>
+            <select id="attendanceOffice">
+              <option value="">All Offices</option>
+              <option>ICT Unit</option>
+              <option>Planning Unit</option>
+              <option>Elementary</option>
+            </select>
+          </label>
+          <div class="filter-actions single">
+            <button id="attendanceViewBtn" type="button">View</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceBody"></tbody>
+          </table>
         </div>
       </section>
 
@@ -208,6 +244,6 @@
       </section>
     </main>
 
-    <script src="/admin.js?v=20260312-07"></script>
+    <script src="/admin.js?v=20260312-08"></script>
   </body>
 </html>

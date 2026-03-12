@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="/icons/sdo-marinduque-192.png" />
     <link rel="apple-touch-icon" href="/icons/sdo-marinduque-180.png" />
     <title>DepEd Marinduque Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260312-07" />
+    <link rel="stylesheet" href="/styles.css?v=20260312-08" />
   </head>
   <body class="attendance-app sdo-theme is-logged-out">
     <header class="app-topbar hidden">
@@ -102,10 +102,14 @@
           <div class="sidebar-subtitle">Attendance Monitoring System</div>
         </div>
         <nav class="sidebar-nav">
-          <a href="#dashboard" class="active">Dashboard</a>
-          <a href="#attendance">Mark Attendance</a>
-          <a href="#history">My Attendance Records</a>
-          <a href="#profile">Profile</a>
+          <a href="#dashboard" class="active user-only">Dashboard</a>
+          <a href="#attendance" class="user-only">Mark Attendance</a>
+          <a href="#history" class="user-only">My Attendance Records</a>
+          <a href="#profile" class="user-only">Profile</a>
+          <a href="/admin.html#dashboard" class="admin-only hidden">Dashboard</a>
+          <a href="/admin.html#employees" class="admin-only hidden">Employees</a>
+          <a href="/admin.html#attendance" class="admin-only hidden">Attendance</a>
+          <a href="/admin.html#reports" class="admin-only hidden">Reports</a>
         </nav>
         <div class="sidebar-profile">
           <img src="/icons/sdo-marinduque.jpg" alt="Profile" class="sidebar-avatar" />
@@ -337,6 +341,6 @@
       </div>
     </main>
 
-    <script src="/app.js?v=20260312-07"></script>
+    <script src="/app.js?v=20260312-08"></script>
   </body>
 </html>

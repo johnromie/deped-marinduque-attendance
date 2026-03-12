@@ -1401,10 +1401,12 @@ body.is-admin #userNav {
   display: none !important;
 }
 
-body.is-admin .sidebar-nav a[href="#attendance"],
-body.is-admin .sidebar-nav a[href="#history"],
-body.is-admin .sidebar-nav a[href="#profile"] {
+body.is-admin .sidebar-nav .user-only {
   display: none !important;
+}
+
+body.is-admin .sidebar-nav .admin-only {
+  display: block !important;
 }
 
 .sdo-theme .anchor {

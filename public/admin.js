@@ -28,6 +28,10 @@ const reportStatusEl = document.getElementById('reportStatus');
 const monthFilterInput = document.getElementById('monthFilter');
 const employeeIdFilterInput = document.getElementById('employeeIdFilter');
 const goAddEmployeeBtn = document.getElementById('goAddEmployeeBtn');
+const attendanceMonthInput = document.getElementById('attendanceMonth');
+const attendanceOfficeSelect = document.getElementById('attendanceOffice');
+const attendanceViewBtn = document.getElementById('attendanceViewBtn');
+const attendanceBody = document.getElementById('attendanceBody');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let lastLoadedRecords = [];
@@ -99,6 +103,12 @@ function toggleSection(sectionId) {
   document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
     link.classList.toggle('active', link.dataset.section === sectionId);
   });
+  if (sectionId === 'employees') {
+    renderEmployeesList();
+  }
+  if (sectionId === 'attendance' && attendanceBody && !attendanceBody.children.length) {
+    loadAttendanceMonitoring();
+  }
 }
 
 function renderEmployeesList() {
@@ -114,14 +124,12 @@ function renderEmployeesList() {
     .map((u) => {
       const pos = u.position || '-';
       const office = u.office || '-';
-      const email = u.email || '-';
       return `
         <tr>
           <td>${u.employeeId || '-'}</td>
           <td>${u.fullName || u.username}</td>
           <td>${pos}</td>
           <td>${office}</td>
-          <td>${email}</td>
           <td><span class="tag ON_SITE">Active</span></td>
         </tr>
       `;
@@ -129,7 +137,7 @@ function renderEmployeesList() {
     .join('');
 
   if (!rows.length) {
-    employeesBody.innerHTML = '<tr><td colspan="6">No employees found.</td></tr>';
+    employeesBody.innerHTML = '<tr><td colspan="5">No employees found.</td></tr>';
   }
 }
 
@@ -184,7 +192,13 @@ async function api(path, options = {}) {
 }
 
 function statusTag(status) {
-  return `<span class="tag ${status}">${status}</span>`;
+  const raw = String(status || '').trim();
+  if (!raw) return '<span class="tag">-</span>';
+  const key = raw.toUpperCase();
+  if (key === 'PRESENT') return '<span class="tag ON_SITE">Present</span>';
+  if (key === 'LATE') return '<span class="tag NEEDS_REVIEW">Late</span>';
+  if (key === 'ABSENT') return '<span class="tag OFF_SITE">Absent</span>';
+  return `<span class="tag ${key}">${raw}</span>`;
 }
 
 function normalizeKey(value) {
@@ -453,6 +467,52 @@ async function loadSummary() {
   } catch (err) {
     setStatus('summary error');
     setInfo(err.message || 'Failed to load summary.');
+  }
+}
+
+async function loadAttendanceMonitoring() {
+  if (!attendanceBody) return;
+  const month = attendanceMonthInput?.value?.trim();
+  if (!month) {
+    alert('Select a month first.');
+    return;
+  }
+  const params = new URLSearchParams();
+  params.set('date', month);
+
+  try {
+    const payload = await fetchAdminRecords(params);
+    let rows = groupRecordsForDisplay(payload.records || []);
+    const officeFilter = String(attendanceOfficeSelect?.value || '').trim().toLowerCase();
+    if (officeFilter) {
+      rows = rows.filter((row) => {
+        const user = findUserByRecord(row);
+        return String(user.office || '').trim().toLowerCase() === officeFilter;
+      });
+    }
+
+    attendanceBody.innerHTML = rows
+      .map((row) => {
+        const user = findUserByRecord(row);
+        const timeIn = row.amIn || row.pmIn || '-';
+        const timeOut = row.pmOut || row.noonOut || '-';
+        return `
+          <tr>
+            <td>${row.dateLabel}</td>
+            <td>${row.fullName || user.fullName || '-'}</td>
+            <td>${timeIn}</td>
+            <td>${timeOut}</td>
+            <td>${statusTag(row.status)}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    if (!rows.length) {
+      attendanceBody.innerHTML = '<tr><td colspan="5">No attendance records found.</td></tr>';
+    }
+  } catch (err) {
+    attendanceBody.innerHTML = '<tr><td colspan="5">Unable to load attendance monitoring.</td></tr>';
   }
 }
 
@@ -784,6 +844,7 @@ document.getElementById('logoutBtn').addEventListener('click', logout);
 if (cancelEmployeeBtn) {
   cancelEmployeeBtn.addEventListener('click', () => {
     resetEmployeeForm();
+    if (employeeFormCard) employeeFormCard.classList.add('hidden');
   });
 }
 if (addEmployeeBtn) {
@@ -798,6 +859,9 @@ if (generateReportBtn) {
 if (downloadReportBtn) {
   downloadReportBtn.addEventListener('click', downloadReport);
 }
+if (attendanceViewBtn) {
+  attendanceViewBtn.addEventListener('click', loadAttendanceMonitoring);
+}
 document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
   link.addEventListener('click', (event) => {
     event.preventDefault();
@@ -806,11 +870,14 @@ document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
     history.replaceState(null, '', `#${sectionId}`);
   });
 });
-// Print buttons removed from dashboard table to match admin UI design.
 if (goAddEmployeeBtn) {
   goAddEmployeeBtn.addEventListener('click', () => {
-    toggleSection('attendance');
-    history.replaceState(null, '', '#attendance');
+    toggleSection('employees');
+    history.replaceState(null, '', '#employees');
+    if (employeeFormCard) {
+      employeeFormCard.classList.remove('hidden');
+      employeeFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 }
 
@@ -831,6 +898,7 @@ function manilaMonthKey() {
 
 dateFilterInput.value = manilaDateKey();
 monthFilterInput.value = manilaMonthKey();
+if (attendanceMonthInput) attendanceMonthInput.value = manilaMonthKey();
 
 startAdminClock();
 
