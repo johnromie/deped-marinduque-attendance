@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260312-06';
+const APP_CACHE_NAME = 'app-shell-v20260312-07';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -467,15 +467,13 @@ function renderAuthState() {
     if (sidebarRoleEl) sidebarRoleEl.textContent = currentUser.role === 'admin' ? 'System Administrator' : 'Employee';
     if (sidebarIdEl) sidebarIdEl.textContent = currentUser.employeeId || '';
     const isAdmin = currentUser.role === 'admin';
+    document.body.classList.toggle('is-admin', isAdmin);
     if (adminLink) adminLink.classList.toggle('hidden', !isAdmin);
     if (setOfficeBtn) setOfficeBtn.classList.toggle('hidden', !isAdmin);
-    if (isAdmin && !location.pathname.endsWith('/admin.html')) {
-      location.href = '/admin.html';
-      return;
-    }
     startLiveClock();
     setUserSection('dashboard');
   } else {
+    document.body.classList.remove('is-admin');
     setAuthStatus('not logged in');
     userBadge.textContent = '';
     if (displayNameEl) displayNameEl.textContent = 'Attendance Dashboard';
@@ -551,10 +549,6 @@ async function handleLogin() {
     currentUser = payload.user;
     if (forgotPanel) forgotPanel.classList.add('hidden');
     if (registerPanel) registerPanel.classList.add('hidden');
-    if (currentUser?.role === 'admin') {
-      location.href = '/admin.html';
-      return;
-    }
     renderAuthState();
     try {
       await fetchConfig();

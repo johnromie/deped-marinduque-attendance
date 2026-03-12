@@ -1385,6 +1385,28 @@ th {
   background: rgba(255, 255, 255, 0.18);
 }
 
+.admin-app .topbar-nav {
+  position: relative;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.admin-app .topbar-nav a {
+  pointer-events: auto;
+}
+
+body.is-admin #attendanceCard,
+body.is-admin #myAttendanceCard,
+body.is-admin #userNav {
+  display: none !important;
+}
+
+body.is-admin .sidebar-nav a[href="#attendance"],
+body.is-admin .sidebar-nav a[href="#history"],
+body.is-admin .sidebar-nav a[href="#profile"] {
+  display: none !important;
+}
+
 .sdo-theme .anchor {
   position: relative;
   top: -90px;
