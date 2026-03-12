@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
-const host = process.env.HOST || '0.0.0.0';
+const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : (process.env.HOST || '0.0.0.0');
 const buildId = `build-${new Date().toISOString()}`;
 const dataDir = path.join(__dirname, 'data');
 const uploadsDir = path.join(__dirname, 'uploads');
