@@ -1828,7 +1828,32 @@ th {
 }
 
 .admin-app .topbar-actions {
-  gap: 12px;
+  gap: 10px;
+}
+
+.admin-app .admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-app .admin-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-app .icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  color: #f2f7ff;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: none;
 }
 
 .admin-app .topbar-actions .ghost {
@@ -1856,6 +1881,10 @@ th {
   flex-wrap: wrap;
 }
 
+.admin-header-row {
+  align-items: center;
+}
+
 .admin-header .muted {
   color: #5b718c;
 }
@@ -1872,6 +1901,36 @@ th {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.compact-stats .stat-card {
+  padding: 16px 18px;
+  border-radius: 12px;
+}
+
+.compact-stats .stat-card h3 {
+  margin-top: 6px;
+  font-size: 28px;
+}
+
+.stat-card.stat-navy {
+  background: linear-gradient(135deg, #1d3f78 0%, #2b5aa6 100%);
+  color: #fff;
+}
+
+.stat-card.stat-green {
+  background: linear-gradient(135deg, #2d8c4c 0%, #3fb56b 100%);
+  color: #fff;
+}
+
+.stat-card.stat-red {
+  background: linear-gradient(135deg, #c4372c 0%, #e1584a 100%);
+  color: #fff;
+}
+
+.stat-card.stat-orange {
+  background: linear-gradient(135deg, #d46a27 0%, #f08b36 100%);
+  color: #fff;
 }
 
 .admin-filter-bar {
@@ -1909,7 +1968,7 @@ th {
 }
 
 .admin-app .table-wrap table {
-  min-width: 900px;
+  min-width: 720px;
 }
 
 @media (max-width: 1100px) {
@@ -1941,16 +2000,19 @@ th {
 .admin-section.hidden { display: none; }
 
 .admin-app .admin-nav a.active {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .admin-app .topbar-nav a {
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 8px 14px;
+  border-radius: 12px;
 }
 
 .admin-app .topbar-nav a.active {
   background: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .admin-employee-grid {
@@ -1963,6 +2025,13 @@ th {
 .employee-form-card {
   display: grid;
   gap: 12px;
+}
+
+.employee-list-card {
+  border: 1px solid #d6e0f2;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f9fbff;
 }
 
 .employee-form-card {
@@ -1979,11 +2048,31 @@ th {
   max-width: 520px;
 }
 
+.report-card {
+  background: #f9fbff;
+  border: 1px solid #d6e0f2;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 520px;
+}
+
 .report-actions {
   display: flex;
   gap: 10px;
   margin-top: 12px;
   flex-wrap: wrap;
+}
+
+.report-actions button {
+  min-width: 180px;
+}
+
+.report-actions #generateReportBtn {
+  background: linear-gradient(180deg, #2b5ca8 0%, #173d76 100%);
+}
+
+.report-actions #downloadReportBtn {
+  background: linear-gradient(180deg, #2f8e47 0%, #1f6f36 100%);
 }
 
 @media (max-width: 1100px) {

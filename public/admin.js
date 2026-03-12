@@ -27,6 +27,7 @@ const downloadReportBtn = document.getElementById('downloadReportBtn');
 const reportStatusEl = document.getElementById('reportStatus');
 const monthFilterInput = document.getElementById('monthFilter');
 const employeeIdFilterInput = document.getElementById('employeeIdFilter');
+const goAddEmployeeBtn = document.getElementById('goAddEmployeeBtn');
 
 let authToken = localStorage.getItem('attendance_token') || '';
 let lastLoadedRecords = [];
@@ -412,31 +413,24 @@ async function loadRecords() {
     }
 
     recordsBody.innerHTML = groupedLoadedRows
-      .map((row, idx) => {
-        const hasMap = Number.isFinite(row.bestLat) && Number.isFinite(row.bestLng);
-        const mapLink = hasMap ? `https://maps.google.com/?q=${row.bestLat},${row.bestLng}` : '';
-        const locationText = hasMap ? `${row.bestLat.toFixed(5)}, ${row.bestLng.toFixed(5)}` : '-';
-        const photo = row.bestPhotoUrl ? `<a href="${row.bestPhotoUrl}" target="_blank" rel="noreferrer"><img class="thumb" src="${row.bestPhotoUrl}" alt="photo"/></a>` : '-';
-        const userLabel = (row.fullName || row.username || row.employeeId || 'User').replace(/"/g, '&quot;');
+      .map((row) => {
+        const user = findUserByRecord(row);
+        const timeIn = row.amIn || row.pmIn || '-';
+        const timeOut = row.pmOut || row.noonOut || '-';
         return `
           <tr>
-            <td>${row.dateLabel}</td>
-            <td>${row.fullName || '-'}<br/><small>${row.employeeId || '-'}</small></td>
-            <td>${row.amIn || '-'}</td>
-            <td>${row.noonOut || '-'}</td>
-            <td>${row.pmIn || '-'}</td>
-            <td>${row.pmOut || '-'}</td>
+            <td>${user.employeeId || '-'}</td>
+            <td>${row.fullName || user.fullName || '-'}</td>
+            <td>${user.office || '-'}</td>
+            <td>${timeIn}</td>
+            <td>${timeOut}</td>
             <td>${statusTag(row.status || '-')}</td>
-            <td>${photo}</td>
-            <td>${locationText}</td>
-            <td>${hasMap ? `<a href="${mapLink}" target="_blank" rel="noreferrer">View Map</a>` : '-'}</td>
-            <td><button type="button" class="secondary row-print-dtr-btn" data-group-index="${idx}" title="Print DTR for ${userLabel}">Print ${userLabel}</button></td>
           </tr>
         `;
       })
       .join('');
 
-    if (!groupedLoadedRows.length) recordsBody.innerHTML = '<tr><td colspan="11">No records found.</td></tr>';
+    if (!groupedLoadedRows.length) recordsBody.innerHTML = '<tr><td colspan="6">No records found.</td></tr>';
 
     setStatus('records loaded');
     setInfo(`Total logs: ${payload.count} | Grouped daily records: ${groupedLoadedRows.length}`);
@@ -812,27 +806,13 @@ document.querySelectorAll('.admin-nav a[data-section]').forEach((link) => {
     history.replaceState(null, '', `#${sectionId}`);
   });
 });
-recordsBody.addEventListener('click', async (event) => {
-  const btn = event.target.closest('.row-print-dtr-btn');
-  if (!btn) return;
-
-  const groupIndex = Number(btn.getAttribute('data-group-index'));
-  const row = groupedLoadedRows[groupIndex];
-  if (!row) return;
-
-  const month = monthFilterInput.value.trim();
-  if (!month) {
-    alert('Select month first for DTR print.');
-    return;
-  }
-
-  try {
-    const user = findUserByRecord(row);
-    await printDtrForUser(user, month);
-  } catch (err) {
-    alert(err.message || 'Failed to generate print form.');
-  }
-});
+// Print buttons removed from dashboard table to match admin UI design.
+if (goAddEmployeeBtn) {
+  goAddEmployeeBtn.addEventListener('click', () => {
+    toggleSection('attendance');
+    history.replaceState(null, '', '#attendance');
+  });
+}
 
 function manilaDateKey() {
   const p = toAdminDateParts(new Date());

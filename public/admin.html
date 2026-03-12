@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f2f57" />
     <title>Admin Dashboard - DepEd Attendance</title>
-    <link rel="stylesheet" href="/styles.css?v=20260312-03" />
+    <link rel="stylesheet" href="/styles.css?v=20260312-05" />
   </head>
   <body class="attendance-app sdo-theme admin-app is-logged-in">
     <header class="app-topbar admin-topbar">
@@ -16,7 +16,12 @@
           <div class="topbar-subtitle">Administrator Console</div>
         </div>
       </div>
-      <div class="topbar-actions">
+      <div class="topbar-actions admin-actions">
+        <div class="admin-icons">
+          <button type="button" class="icon-btn" aria-label="Notifications">🔔</button>
+          <button type="button" class="icon-btn" aria-label="Messages">✉️</button>
+          <button type="button" class="icon-btn" aria-label="Menu">☰</button>
+        </div>
         <span class="topbar-pill" id="adminUserInfo">Checking admin session...</span>
         <button id="logoutBtn" type="button" class="ghost">Logout</button>
       </div>
@@ -41,7 +46,7 @@
           </div>
         </div>
 
-        <section class="admin-stat-grid">
+        <section class="admin-stat-grid compact-stats">
           <article class="stat-card stat-navy">
             <div>Total Employees</div>
             <h3 id="adminTotalEmployees">--</h3>
@@ -91,17 +96,12 @@
           <table>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Employee</th>
-                <th>AM In</th>
-                <th>Noon Out</th>
-                <th>PM In</th>
-                <th>PM Out</th>
+                <th>ID</th>
+                <th>Employee Name</th>
+                <th>Office</th>
+                <th>Time In</th>
+                <th>Time Out</th>
                 <th>Status</th>
-                <th>Photo</th>
-                <th>Location</th>
-                <th>Map</th>
-                <th>Print DTR</th>
               </tr>
             </thead>
             <tbody id="recordsBody"></tbody>
@@ -110,11 +110,12 @@
       </section>
 
       <section class="card admin-section hidden" id="employees">
-        <div class="admin-header">
+        <div class="admin-header admin-header-row">
           <div>
             <h2>Employees List</h2>
             <p class="muted">Manage employee records and add new staff.</p>
           </div>
+          <button id="goAddEmployeeBtn" type="button" class="secondary">+ Add Employee</button>
         </div>
 
         <div class="employee-list-card">
@@ -182,29 +183,31 @@
           </div>
         </div>
 
-        <div class="report-grid">
-          <label>
-            Select Month
-            <input id="monthFilter" type="month" />
-          </label>
-          <label>
-            Select Office
-            <select id="reportOffice">
-              <option value="">All Offices</option>
-              <option>ICT Unit</option>
-              <option>Planning Unit</option>
-              <option>Elementary</option>
-            </select>
-          </label>
-        </div>
-        <div class="report-actions">
-          <button id="generateReportBtn" type="button">Generate Report</button>
-          <button id="downloadReportBtn" type="button" class="secondary">Download PDF</button>
+        <div class="report-card">
+          <div class="report-grid">
+            <label>
+              Select Month
+              <input id="monthFilter" type="month" />
+            </label>
+            <label>
+              Select Office
+              <select id="reportOffice">
+                <option value="">All Offices</option>
+                <option>ICT Unit</option>
+                <option>Planning Unit</option>
+                <option>Elementary</option>
+              </select>
+            </label>
+          </div>
+          <div class="report-actions">
+            <button id="generateReportBtn" type="button">Generate Report</button>
+            <button id="downloadReportBtn" type="button" class="secondary">Download PDF</button>
+          </div>
         </div>
         <div class="status" id="reportStatus">Report status: waiting</div>
       </section>
     </main>
 
-    <script src="/admin.js?v=20260312-03"></script>
+    <script src="/admin.js?v=20260312-05"></script>
   </body>
 </html>
