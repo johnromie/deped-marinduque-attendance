@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260312-09';
+const APP_CACHE_NAME = 'app-shell-v20260312-10';
 let latestLocationLabel = '';
 
 function setStatus(text) {
@@ -931,6 +931,7 @@ async function submitAttendance(intent) {
   form.append('latitude', String(latestLocation.latitude));
   form.append('longitude', String(latestLocation.longitude));
   form.append('gpsAccuracyMeters', String(latestLocation.gpsAccuracyMeters));
+  if (latestLocationLabel) form.append('locationLabel', latestLocationLabel);
   if (intent) form.append('attendanceIntent', String(intent));
   form.append('photo', photoBlob, `attendance-${Date.now()}.jpg`);
 

@@ -611,6 +611,29 @@ function attendanceTypeByTime(hour, minute) {
   return null;
 }
 
+function resolveAttendanceType(records, userId, localDate, attendanceIntent, manilaParts) {
+  const timeBased = attendanceTypeByTime(manilaParts.hour, manilaParts.minute);
+  const intent = String(attendanceIntent || '').trim().toLowerCase();
+  if (!intent) return timeBased;
+
+  const sameDay = records.filter((r) => r.userId === userId && r.localDate === localDate);
+  const has = (code) => sameDay.some((r) => r.attendanceType === code);
+
+  if (intent === 'in') {
+    if (!has('MORNING_IN')) return { code: 'MORNING_IN', label: 'Morning Time In' };
+    if (!has('AFTERNOON_IN')) return { code: 'AFTERNOON_IN', label: 'Afternoon Time In' };
+    return timeBased;
+  }
+
+  if (intent === 'out') {
+    if (!has('NOON_OUT')) return { code: 'NOON_OUT', label: 'Noon Time Out' };
+    if (!has('AFTERNOON_OUT')) return { code: 'AFTERNOON_OUT', label: 'Afternoon Time Out' };
+    return timeBased;
+  }
+
+  return timeBased;
+}
+
 function parseMonthParam(monthText) {
   const input = String(monthText || '').trim();
   if (!/^\d{4}-\d{2}$/.test(input)) return null;
@@ -1516,7 +1539,7 @@ app.post('/api/config/office-location', requireAuth, requireAdmin, (req, res) =>
 
 app.post('/api/attendance', requireAuth, upload.single('photo'), (req, res) => {
   try {
-    const { latitude, longitude, gpsAccuracyMeters, note } = req.body;
+    const { latitude, longitude, gpsAccuracyMeters, note, locationLabel } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ message: 'Photo is required.' });
@@ -1539,24 +1562,13 @@ app.post('/api/attendance', requireAuth, upload.single('photo'), (req, res) => {
 
     const manila = getManilaDateParts(new Date());
     const attendanceIntent = String(req.body.attendanceIntent || '').trim().toLowerCase();
-    const attendanceType = attendanceTypeByTime(manila.hour, manila.minute);
+    const records = readJsonArray(attendanceFile);
+    const attendanceType = resolveAttendanceType(records, req.user.id, manila.localDate, attendanceIntent, manila);
     if (!attendanceType) {
       return res.status(400).json({
-        message: 'Attendance is allowed only during Morning Time In, Noon Time Out, Afternoon Time In, and Afternoon Time Out windows.'
+        message: 'Attendance time window not available. Please try again.'
       });
     }
-    if (attendanceIntent === 'in' && !['MORNING_IN', 'AFTERNOON_IN'].includes(attendanceType.code)) {
-      return res.status(400).json({
-        message: 'Time In is only allowed during Morning Time In or Afternoon Time In windows.'
-      });
-    }
-    if (attendanceIntent === 'out' && !['NOON_OUT', 'AFTERNOON_OUT'].includes(attendanceType.code)) {
-      return res.status(400).json({
-        message: 'Time Out is only allowed during Noon Time Out or Afternoon Time Out windows.'
-      });
-    }
-
-    const records = readJsonArray(attendanceFile);
     const duplicate = records.find(
       (r) => r.userId === req.user.id && r.localDate === manila.localDate && r.attendanceType === attendanceType.code
     );
@@ -1584,6 +1596,7 @@ app.post('/api/attendance', requireAuth, upload.single('photo'), (req, res) => {
       employeeId: req.user.employeeId,
       fullName: req.user.fullName,
       note: note ? String(note).trim() : '',
+      locationLabel: locationLabel ? String(locationLabel).trim() : '',
       attendanceType: attendanceType.code,
       attendanceTypeLabel: attendanceType.label,
       localDate: manila.localDate,
