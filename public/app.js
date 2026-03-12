@@ -68,7 +68,7 @@ let clockTimer = null;
 let deferredInstallPrompt = null;
 const inAppBrowser = /FBAN|FBAV|Instagram|Line|Messenger/i.test(navigator.userAgent);
 const STRICT_CLIENT_GPS_METERS = 20;
-const APP_CACHE_NAME = 'app-shell-v20260312-01';
+const APP_CACHE_NAME = 'app-shell-v20260312-02';
 
 function setStatus(text) {
   statusEl.textContent = `Status: ${text}`;
@@ -469,6 +469,10 @@ function renderAuthState() {
     const isAdmin = currentUser.role === 'admin';
     adminLink.classList.toggle('hidden', !isAdmin);
     setOfficeBtn.classList.toggle('hidden', !isAdmin);
+    if (isAdmin && !location.pathname.endsWith('/admin.html')) {
+      location.href = '/admin.html';
+      return;
+    }
     startLiveClock();
     setUserSection('dashboard');
   } else {
